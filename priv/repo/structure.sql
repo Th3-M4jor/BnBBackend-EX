@@ -1,0 +1,340 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 12.7 (Ubuntu 12.7-0ubuntu0.20.04.1)
+-- Dumped by pg_dump version 12.7 (Ubuntu 12.7-0ubuntu0.20.04.1)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- Name: Dice; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."Dice" AS (
+	dienum integer,
+	dietype integer
+);
+
+
+--
+-- Name: Element; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."Element" AS ENUM (
+    'Null',
+    'Fire',
+    'Aqua',
+    'Elec',
+    'Wood',
+    'Wind',
+    'Sword',
+    'Break',
+    'Cursor',
+    'Recov',
+    'Invis',
+    'Object'
+);
+
+
+--
+-- Name: Blight; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."Blight" AS (
+	elem public."Element",
+	dmg public."Dice",
+	duration public."Dice"
+);
+
+
+--
+-- Name: ChipClass; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."ChipClass" AS ENUM (
+    'Standard',
+    'Mega',
+    'Giga'
+);
+
+
+--
+-- Name: ChipEffect; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."ChipEffect" AS ENUM (
+    'Stagger',
+    'Blind',
+    'Confuse',
+    'Lock',
+    'Shield',
+    'Barrier',
+    'AC Pierce',
+    'AC Down',
+    'Weakness',
+    'Aura',
+    'Invisible',
+    'Paralysis',
+    'Panic',
+    'Heal',
+    'Dmg Boost'
+);
+
+
+--
+-- Name: ChipType; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."ChipType" AS ENUM (
+    'Melee',
+    'Projectile',
+    'Wave',
+    'Burst',
+    'Summon',
+    'Construct',
+    'Support',
+    'Heal',
+    'Trap'
+);
+
+
+--
+-- Name: Color; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."Color" AS ENUM (
+    'White',
+    'Pink',
+    'Yellow',
+    'Red',
+    'Green',
+    'Blue',
+    'Gray'
+);
+
+
+--
+-- Name: Range; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."Range" AS ENUM (
+    'Varies',
+    'Self',
+    'Near',
+    'Far',
+    'Close'
+);
+
+
+--
+-- Name: Skill; Type: TYPE; Schema: public; Owner: -
+--
+
+CREATE TYPE public."Skill" AS ENUM (
+    'PER',
+    'INF',
+    'TCH',
+    'STR',
+    'AGI',
+    'END',
+    'CHM',
+    'VLR',
+    'AFF'
+);
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: Battlechip; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."Battlechip" (
+    id integer NOT NULL,
+    name character varying(64) NOT NULL,
+    elem public."Element"[] NOT NULL,
+    skill public."Skill"[],
+    range public."Range" NOT NULL,
+    hits character varying(12),
+    targets integer,
+    description text,
+    effect public."ChipEffect"[],
+    effduration integer,
+    blight public."Blight",
+    damage public."Dice",
+    kind public."ChipType" NOT NULL,
+    class public."ChipClass" NOT NULL
+);
+
+
+--
+-- Name: Battlechip_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public."Battlechip_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: Battlechip_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public."Battlechip_id_seq" OWNED BY public."Battlechip".id;
+
+
+--
+-- Name: NaviCust; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."NaviCust" (
+    id integer NOT NULL,
+    name character varying NOT NULL,
+    description text NOT NULL,
+    size integer NOT NULL,
+    color public."Color" NOT NULL
+);
+
+
+--
+-- Name: NaviCust_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public."NaviCust_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: NaviCust_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public."NaviCust_id_seq" OWNED BY public."NaviCust".id;
+
+
+--
+-- Name: Virus; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public."Virus" (
+    id integer NOT NULL,
+    name character varying(64) NOT NULL,
+    element public."Element"[] NOT NULL,
+    hp integer NOT NULL,
+    ac integer NOT NULL,
+    stats jsonb NOT NULL,
+    skills jsonb NOT NULL,
+    drops jsonb NOT NULL,
+    description text,
+    cr integer NOT NULL,
+    abilities character varying(64)[],
+    damage public."Dice",
+    dmgelem public."Element"[]
+);
+
+
+--
+-- Name: Virus_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public."Virus_id_seq"
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: Virus_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public."Virus_id_seq" OWNED BY public."Virus".id;
+
+
+--
+-- Name: Battlechip id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."Battlechip" ALTER COLUMN id SET DEFAULT nextval('public."Battlechip_id_seq"'::regclass);
+
+
+--
+-- Name: NaviCust id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."NaviCust" ALTER COLUMN id SET DEFAULT nextval('public."NaviCust_id_seq"'::regclass);
+
+
+--
+-- Name: Virus id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."Virus" ALTER COLUMN id SET DEFAULT nextval('public."Virus_id_seq"'::regclass);
+
+
+--
+-- Name: Battlechip Battlechip_name_key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."Battlechip"
+    ADD CONSTRAINT "Battlechip_name_key" UNIQUE (name);
+
+
+--
+-- Name: Battlechip Battlechip_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."Battlechip"
+    ADD CONSTRAINT "Battlechip_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: NaviCust NaviCust_Name_Key; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."NaviCust"
+    ADD CONSTRAINT "NaviCust_Name_Key" UNIQUE (name) INCLUDE (name);
+
+
+--
+-- Name: NaviCust NaviCust_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."NaviCust"
+    ADD CONSTRAINT "NaviCust_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: Virus Virus_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public."Virus"
+    ADD CONSTRAINT "Virus_pkey" PRIMARY KEY (id);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
