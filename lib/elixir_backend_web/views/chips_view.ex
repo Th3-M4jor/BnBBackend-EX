@@ -5,8 +5,4 @@ defmodule ElixirBackendWeb.ChipsView do
     chips
   end
 
-  def render("ncps.json", %{ncps: ncps}) do
-    ncps
-  end
-
 end

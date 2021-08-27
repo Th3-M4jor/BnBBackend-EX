@@ -25,6 +25,7 @@ defmodule ElixirBackendWeb.Router do
 
     get "/chips", ChipsController, :index
     get "/ncps", NcpsController, :index
+    get "/viruses", VirusController, :index
   end
 
   # Enables LiveDashboard only for development
