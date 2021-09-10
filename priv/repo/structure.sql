@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.7 (Ubuntu 12.7-0ubuntu0.20.04.1)
--- Dumped by pg_dump version 12.7 (Ubuntu 12.7-0ubuntu0.20.04.1)
+-- Dumped from database version 12.8 (Ubuntu 12.8-0ubuntu0.20.04.1)
+-- Dumped by pg_dump version 12.8 (Ubuntu 12.8-0ubuntu0.20.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -249,7 +249,8 @@ CREATE TABLE public."Virus" (
     cr integer NOT NULL,
     abilities character varying(64)[],
     damage public."Dice",
-    dmgelem public."Element"[]
+    dmgelem public."Element"[],
+    blight public."Blight"
 );
 
 
@@ -271,6 +272,16 @@ CREATE SEQUENCE public."Virus_id_seq"
 --
 
 ALTER SEQUENCE public."Virus_id_seq" OWNED BY public."Virus".id;
+
+
+--
+-- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.schema_migrations (
+    version bigint NOT NULL,
+    inserted_at timestamp(0) without time zone
+);
 
 
 --
@@ -332,6 +343,14 @@ ALTER TABLE ONLY public."NaviCust"
 
 ALTER TABLE ONLY public."Virus"
     ADD CONSTRAINT "Virus_pkey" PRIMARY KEY (id);
+
+
+--
+-- Name: schema_migrations schema_migrations_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.schema_migrations
+    ADD CONSTRAINT schema_migrations_pkey PRIMARY KEY (version);
 
 
 --

@@ -7,8 +7,7 @@ defmodule ElixirBackend.LibObj.NCP do
     field :description, :string
     field :cost, :integer, source: :size
 
-    field :color, Ecto.Enum,
-      values: [
+    field :color, Ecto.Enum, values: [
         white: "White",
         pink: "Pink",
         yellow: "Yellow",
@@ -17,5 +16,8 @@ defmodule ElixirBackend.LibObj.NCP do
         red: "Red",
         gray: "Gray"
       ]
+
+    field :custom, :boolean
+
   end
 end

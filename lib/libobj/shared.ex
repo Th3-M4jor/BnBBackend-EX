@@ -133,7 +133,7 @@ defmodule ElixirBackend.LibObj.Skill do
   def load(_skills), do: :error
 
   def dump(skills) when is_list(skills) do
-    as_strings = Enum.map(skills, fn skill -> String.Chars.to_string(skill) |> String.upcase() end)
+    as_strings = Enum.map(skills, fn skill -> to_string(skill) |> String.upcase(:ascii) end)
     {:ok, as_strings}
   end
 

@@ -25,11 +25,10 @@ defmodule ElixirBackend.LibObj.Battlechip do
     field :elem, Element
     field :skill, Skill
 
-    field :range, Ecto.Enum,
-      values: [var: "Varies", self: "Self", close: "Close", near: "Near", far: "Far"]
+    field :range, Ecto.Enum, values: [var: "Varies", self: "Self", close: "Close", near: "Near", far: "Far"]
 
     field :hits, :string
-    field :targets, :integer
+    field :targets, :string
     field :description, :string
     field :effect, {:array, :string}
     field :effduration, :integer
@@ -50,6 +49,8 @@ defmodule ElixirBackend.LibObj.Battlechip do
       ]
 
     field :class, Ecto.Enum, values: [standard: "Standard", mega: "Mega", giga: "Giga"]
+
+    field :custom, :boolean
   end
 
 end

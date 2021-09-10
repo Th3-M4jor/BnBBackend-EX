@@ -1,8 +1,9 @@
 defmodule ElixirBackendWeb.UserSocket do
   use Phoenix.Socket
+  require Logger
 
   ## Channels
-  # channel "room:*", ElixirBackendWeb.RoomChannel
+  channel "room:*", ElixirBackendWeb.RoomChannel
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
@@ -17,6 +18,7 @@ defmodule ElixirBackendWeb.UserSocket do
   # performing token verification on connect.
   @impl true
   def connect(_params, socket, _connect_info) do
+    Logger.debug("UserSocket: connect")
     {:ok, socket}
   end
 

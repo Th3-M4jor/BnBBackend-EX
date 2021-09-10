@@ -14,7 +14,8 @@ defmodule ElixirBackend.Application do
       # Start the PubSub system
       {Phoenix.PubSub, name: ElixirBackend.PubSub},
       # Start the Endpoint (http/https)
-      ElixirBackendWeb.Endpoint
+      ElixirBackendWeb.Endpoint,
+      ElixirBackend.FolderGroups,
       # Start a worker by calling: ElixirBackend.Worker.start_link(arg)
       # {ElixirBackend.Worker, arg}
     ]
