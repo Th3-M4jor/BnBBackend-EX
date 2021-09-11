@@ -6,12 +6,12 @@ defmodule ElixirBackendWeb.NcpsController do
 
   def index(conn, _) do
     ncps = ElixirBackend.Repo.all(NCP)
-    render(conn, "ncps.json", ncps: ncps)
+    json(conn, ncps)
   end
 
   def default(conn, _) do
     ncp = ElixirBackend.Repo.all(from n in NCP, where: n.custom == false)
-    render(conn, "ncps.json", ncps: ncp)
+    json(conn, ncp)
   end
 
 end

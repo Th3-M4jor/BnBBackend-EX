@@ -7,12 +7,14 @@ defmodule ElixirBackendWeb.ChipsController do
 
   def index(conn, _) do
     chips = ElixirBackend.Repo.all(Battlechip)
-    render(conn, "chips.json", chips: chips)
+    json(conn, chips)
+    #render(conn, "chips.json", chips: chips)
   end
 
   def default(conn, _) do
     chips = ElixirBackend.Repo.all(from c in Battlechip, where: c.custom == false)
-    render(conn, "chips.json", chips: chips)
+    json(conn, chips)
+    #render(conn, "chips.json", chips: chips)
   end
 
 end

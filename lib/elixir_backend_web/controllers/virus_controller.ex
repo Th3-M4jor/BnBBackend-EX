@@ -6,12 +6,12 @@ defmodule ElixirBackendWeb.VirusController do
   import Ecto.Query, only: [from: 2]
   def index(conn, _) do
     viruses = ElixirBackend.Repo.all(Virus)
-    render(conn, "viruses.json", viruses: viruses)
+    json(conn, viruses)
   end
 
   def default(conn, _) do
     viruses = ElixirBackend.Repo.all(from v in Virus, where: v.custom == false)
-    render(conn, "viruses.json", viruses: viruses)
+    json(conn, viruses)
   end
 
 end
