@@ -23,12 +23,14 @@ defmodule ElixirBackendWeb.Router do
   scope "/fetch", ElixirBackendWeb do
     pipe_through :api
 
-    get "/chips", ChipsController, :index
-    get "/chips/default", ChipsController, :default
-    get "/ncps", NcpsController, :index
-    get "/ncps/default", NcpsController, :default
-    get "/viruses", VirusController, :index
-    get "/viruses/default", VirusController, :default
+    get "/:kind", LibObjController, :index
+    get "/:kind/default", LibObjController, :default
+  #  get "/chips", ChipsController, :index
+  #  get "/chips/default", ChipsController, :default
+  #  get "/ncps", NcpsController, :index
+  #  get "/ncps/default", NcpsController, :default
+  #  get "/viruses", VirusController, :index
+  #  get "/viruses/default", VirusController, :default
   end
 
   # Enables LiveDashboard only for development
