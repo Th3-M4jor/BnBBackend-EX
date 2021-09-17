@@ -4,52 +4,35 @@ defmodule ElixirBackendWeb.LibObjController do
   alias ElixirBackend.LibObj.{NCP, Virus, Battlechip}
   import Ecto.Query, only: [from: 2]
 
-  def index(conn, %{"kind" => libobj_kind}) do
-    fetch_libobjs(conn, libobj_kind)
+  plug :verify_params
+
+  def fetch(conn, _) do
+    #chips = ElixirBackend.Repo.all(Battlechip)
+    #json(conn, chips)
+
+    objs = ElixirBackend.Repo.all(conn.assigns.kind)
+    json(conn, objs)
+
   end
 
-  def default(conn, %{"kind" => libobj_kind}) do
-    fetch_libobjs_default(conn, libobj_kind)
+  def fetch_no_custom(conn, _) do
+
+    objs = ElixirBackend.Repo.all(from o in conn.assigns.kind, where: o.custom == false)
+
+    json(conn, objs)
+
   end
 
-  defp fetch_libobjs(conn, "chips") do
-    chips = ElixirBackend.Repo.all(Battlechip)
-    json(conn, chips)
+  defp verify_params(conn, _) do
+    case conn.params["kind"] do
+      "ncps" ->
+        conn |> assign(:kind, NCP)
+      "viruses" ->
+        conn |> assign(:kind, Virus)
+      "chips" ->
+        conn |> assign(:kind, Battlechip)
+      _ ->
+        conn |> send_resp(404, "Only chips, ncps, and viruses are allowed") |> halt()
+    end
   end
-
-  defp fetch_libobjs(conn, "viruses") do
-    viruses = ElixirBackend.Repo.all(Virus)
-    json(conn, viruses)
-  end
-
-  defp fetch_libobjs(conn, "ncps") do
-    ncps = ElixirBackend.Repo.all(NCP)
-    json(conn, ncps)
-  end
-
-  defp fetch_libobjs(conn, _unknown) do
-    conn
-    |> send_resp(404, "")
-  end
-
-  defp fetch_libobjs_default(conn, "chips") do
-    chips = ElixirBackend.Repo.all(from c in Battlechip, where: c.custom == false)
-    json(conn, chips)
-  end
-
-  defp fetch_libobjs_default(conn, "viruses") do
-    viruses = ElixirBackend.Repo.all(from v in Virus, where: v.custom == false)
-    json(conn, viruses)
-  end
-
-  defp fetch_libobjs_default(conn, "ncps") do
-    ncps = ElixirBackend.Repo.all(from n in NCP, where: n.custom == false)
-    json(conn, ncps)
-  end
-
-  defp fetch_libobjs_default(conn, _unknown) do
-    conn
-    |> send_resp(404, "")
-  end
-
 end

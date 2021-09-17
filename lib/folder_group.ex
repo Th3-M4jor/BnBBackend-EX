@@ -86,6 +86,18 @@ defmodule ElixirBackend.FolderGroups do
     end
   end
 
+  @spec insert_spectator_and_get(String.t(), String.t()) :: {:ok, list()} | :error
+  def insert_spectator_and_get(group_name, player_name) do
+    group = :ets.lookup(:folder_group_tables, group_name)
+    case group do
+      [] ->
+        :error
+      [{_, {group_tid, _}}] ->
+        :ets.insert(group_tid, {player_name, :spectator})
+        {:ok, :ets.tab2list(group_tid)}
+    end
+  end
+
   defp schedule_cleanup do
     Process.send_after(self(), :cleanup, :timer.hours(2))
   end

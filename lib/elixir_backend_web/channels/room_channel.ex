@@ -28,6 +28,36 @@ defmodule ElixirBackendWeb.RoomChannel do
     {:reply, {:ok, payload}, socket}
   end
 
+  def handle_in("spectate", _payload, socket) do
+    Logger.debug([
+      "Recieved spectate for ",
+      socket.assigns.player_name,
+    ])
+
+    players =
+      ElixirBackend.FolderGroups.insert_spectator_and_get(
+        socket.assigns.group_name,
+        socket.assigns.player_name
+      )
+
+      unless players == :error do
+        res =
+          elem(players, 1)
+          |> Enum.filter(fn {player_name, folder} ->
+            player_name != socket.assigns.player_name and folder != :spectator
+          end)
+          |> Enum.map(fn {player_name, folder} ->
+            [player_name, folder]
+          end)
+
+        broadcast!(socket, "joined", %{"body" => res})
+        {:reply, :ok, socket}
+      else
+        {:stop, "Group error", {:error, "Group missing"}, socket}
+      end
+
+  end
+
   def handle_in("ready", %{"body" => data}, socket) when is_list(data) do
     Logger.debug([
       "Recieved ready for ",
@@ -99,8 +129,8 @@ defmodule ElixirBackendWeb.RoomChannel do
   def handle_out("joined", %{"body" => data}, socket) do
     # remove player's own folder from the list
     data =
-      Enum.filter(data, fn [player_name, _] ->
-        player_name != socket.assigns.player_name
+      Enum.filter(data, fn [player_name, data] ->
+        player_name != socket.assigns.player_name and data != :spectator
       end)
 
     push(socket, "updated", %{"body" => data})
@@ -111,8 +141,8 @@ defmodule ElixirBackendWeb.RoomChannel do
     unless name == socket.assigns.player_name do
       # remove player's own folder from the list
       data =
-        Enum.filter(data, fn [player_name, _] ->
-          player_name != socket.assigns.player_name
+        Enum.filter(data, fn [player_name, data] ->
+          player_name != socket.assigns.player_name and data != :spectator
         end)
 
       push(socket, "updated", %{"body" => data})
@@ -123,8 +153,8 @@ defmodule ElixirBackendWeb.RoomChannel do
 
   def handle_out("player_left", %{"body" => data}, socket) do
     data =
-      Enum.filter(data, fn [player_name, _] ->
-        player_name != socket.assigns.player_name
+      Enum.filter(data, fn [player_name, data] ->
+        player_name != socket.assigns.player_name and data != :spectator
       end)
 
     push(socket, "updated", %{"body" => data})
