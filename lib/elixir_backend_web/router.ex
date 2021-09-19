@@ -23,8 +23,10 @@ defmodule ElixirBackendWeb.Router do
   scope "/fetch", ElixirBackendWeb do
     pipe_through :api
 
+    get "/groups", GroupsController, :index
     get "/:kind", LibObjController, :fetch
     get "/:kind/default", LibObjController, :fetch_no_custom
+
   #  get "/chips", ChipsController, :index
   #  get "/chips/default", ChipsController, :default
   #  get "/ncps", NcpsController, :index

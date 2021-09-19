@@ -62,8 +62,15 @@ defmodule ElixirBackend.FolderGroups do
     pairs =
       :ets.select(tid, [{{:"$1", {:"$2", :"$3"}}, [{:<, :"$3", limit}], [{{:"$1", :"$2"}}]}])
 
+    bot_node = Application.fetch_env!(:elixir_backend, :bot_node_name)
+
     Enum.each(pairs, fn {name, table} ->
       ElixirBackendWeb.Endpoint.broadcast("room:#{name}", "force_close", %{})
+
+      if Node.alive?() and Node.connect(bot_node) do
+        :erpc.cast(bot_node, BnBBot.Commands.Groups, :group_force_closed, [name])
+      end
+
       :ets.delete(tid, name)
       :ets.delete(table)
     end)
@@ -96,6 +103,16 @@ defmodule ElixirBackend.FolderGroups do
         :ets.insert(group_tid, {player_name, :spectator})
         {:ok, :ets.tab2list(group_tid)}
     end
+  end
+
+  @spec get_groups_and_ct() :: [{String.t(), %{count: non_neg_integer(), spectators: non_neg_integer()}}]
+  def get_groups_and_ct() do
+    groups = :ets.tab2list(:folder_group_tables)
+    Enum.map(groups, fn {name, {group_tid, _}} ->
+      len = :ets.info(group_tid, :size)
+      spectators = :ets.select_count(group_tid, [{{:"$1", :"$2"}, [{:==, :"$2", :spectator}], [true]}])
+      {name, %{count: len, spectators: spectators}}
+    end)
   end
 
   defp schedule_cleanup do
