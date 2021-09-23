@@ -13,13 +13,6 @@ defmodule ElixirBackendWeb.Router do
     plug :accepts, ["json"]
   end
 
-#  scope "/", ElixirBackendWeb do
-#    pipe_through :browser
-#
-#    get "/", PageController, :index
-#  end
-
-  # Other scopes may use custom stacks.
   scope "/fetch", ElixirBackendWeb do
     pipe_through :api
 
@@ -27,12 +20,6 @@ defmodule ElixirBackendWeb.Router do
     get "/:kind", LibObjController, :fetch
     get "/:kind/default", LibObjController, :fetch_no_custom
 
-  #  get "/chips", ChipsController, :index
-  #  get "/chips/default", ChipsController, :default
-  #  get "/ncps", NcpsController, :index
-  #  get "/ncps/default", NcpsController, :default
-  #  get "/viruses", VirusController, :index
-  #  get "/viruses/default", VirusController, :default
   end
 
   # Enables LiveDashboard only for development
