@@ -13,11 +13,17 @@ defmodule ElixirBackendWeb.Router do
     plug :accepts, ["json"]
   end
 
+  # Only valid "kinds" are chips, viruses, and ncps at present
   scope "/fetch", ElixirBackendWeb do
     pipe_through :api
 
+    # see what folder groups are currently open
     get "/groups", GroupsController, :index
+
+    # get all chips/viruses/ncps
     get "/:kind", LibObjController, :fetch
+
+    # get all chips/viruses/ncps except "campaign specific" ones
     get "/:kind/default", LibObjController, :fetch_no_custom
 
   end
