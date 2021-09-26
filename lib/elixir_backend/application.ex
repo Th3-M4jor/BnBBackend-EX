@@ -9,8 +9,6 @@ defmodule ElixirBackend.Application do
     children = [
       # Start the Ecto repository
       ElixirBackend.Repo,
-      # Start the Telemetry supervisor
-      ElixirBackendWeb.Telemetry,
       # Start the PubSub system
       {Phoenix.PubSub, name: ElixirBackend.PubSub},
       # Start the Endpoint (http/https)
