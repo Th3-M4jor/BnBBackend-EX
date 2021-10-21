@@ -125,6 +125,8 @@ defmodule ElixirBackend.LibObj.Virus do
   alias ElixirBackend.LibObj.{Element, Blight, Dice, VirusStats, VirusSkills, VirusDrops}
 
   use Ecto.Schema
+  import Ecto.Query, only: [dynamic: 2]
+  import ElixirBackend.CustomQuery
 
   @derive {Jason.Encoder,
            only: [
@@ -158,6 +160,66 @@ defmodule ElixirBackend.LibObj.Virus do
     field :dmgelem, Element
     field :blight, Blight
     field :custom, :boolean
+
+  end
+
+  def gen_conditions(params) do
+    conditions = true
+
+    conditions = unless is_nil(params["elem"]) do
+      elem = params["elem"] |> String.capitalize(:ascii)
+      dynamic([v], array_contains(v.element, ^elem))
+    else
+      conditions
+    end
+
+    conditions = unless is_nil(params["min_cr"]) do
+      dynamic([v], v.cr >= ^params["min_cr"] and ^conditions)
+    else
+      conditions
+    end
+
+    conditions = unless is_nil(params["max_cr"]) do
+      dynamic([v], v.cr <= ^params["max_cr"] and ^conditions)
+    else
+      conditions
+    end
+
+    conditions = unless is_nil(params["cr"]) do
+      dynamic([v], v.cr >= ^params["cr"] and ^conditions)
+    else
+      conditions
+    end
+
+    conditions = unless is_nil(params["min_hp"]) do
+      dynamic([v], v.hp >= ^params["min_hp"] and ^conditions)
+    else
+      conditions
+    end
+
+    conditions = unless is_nil(params["max_hp"]) do
+      dynamic([v], v.hp <= ^params["max_hp"] and ^conditions)
+    else
+      conditions
+    end
+
+    conditions = unless is_nil(params["min_ac"]) do
+      dynamic([v], v.ac >= ^params["min_ac"] and ^conditions)
+    else
+      conditions
+    end
+
+    conditions = unless is_nil(params["max_ac"]) do
+      dynamic([v], v.ac <= ^params["max_ac"] and ^conditions)
+    else
+      conditions
+    end
+
+    unless is_nil(params["custom"]) do
+      dynamic([v], v.custom == ^params["custom"] and ^conditions)
+    else
+      conditions
+    end
 
   end
 end

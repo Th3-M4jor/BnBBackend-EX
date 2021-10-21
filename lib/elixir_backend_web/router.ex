@@ -21,10 +21,7 @@ defmodule ElixirBackendWeb.Router do
     get "/groups", GroupsController, :index
 
     # get all chips/viruses/ncps
-    get "/:kind", LibObjController, :fetch
-
-    # get all chips/viruses/ncps except "campaign specific" ones
-    get "/:kind/default", LibObjController, :fetch_no_custom
+    get "/:obj", LibObjController, :fetch
 
   end
 
