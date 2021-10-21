@@ -186,7 +186,7 @@ defmodule ElixirBackend.LibObj.Virus do
     end
 
     conditions = unless is_nil(params["cr"]) do
-      dynamic([v], v.cr >= ^params["cr"] and ^conditions)
+      dynamic([v], v.cr == ^params["cr"] and ^conditions)
     else
       conditions
     end
