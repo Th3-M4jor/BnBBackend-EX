@@ -43,7 +43,7 @@ defmodule ElixirBackendWeb.RoomChannel do
       unless players == :error do
         res =
           elem(players, 1)
-          |> Enum.filter(fn {player_name, folder} ->
+          |> Stream.filter(fn {player_name, folder} ->
             player_name != socket.assigns.player_name and folder != :spectator
           end)
           |> Enum.map(fn {player_name, folder} ->

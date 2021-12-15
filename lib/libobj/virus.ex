@@ -164,62 +164,87 @@ defmodule ElixirBackend.LibObj.Virus do
   end
 
   def gen_conditions(params) do
-    conditions = true
+    # conditions = true
 
-    conditions = unless is_nil(params["elem"]) do
-      elem = params["elem"] |> String.capitalize(:ascii)
-      dynamic([v], array_contains(v.element, ^elem))
-    else
-      conditions
+    for {key, value} <- params, reduce: true do
+      acc ->
+        case key do
+          "elem" ->
+            elem = String.capitalize(value, :ascii)
+            dynamic([v], array_contains(v.element, ^elem) and ^acc)
+          "min_cr" ->
+            dynamic([v], v.cr >= ^value and ^acc)
+          "max_cr" ->
+            dynamic([v], v.cr <= ^value and ^acc)
+          "min_hp" ->
+            dynamic([v], v.hp >= ^value and ^acc)
+          "max_hp" ->
+            dynamic([v], v.hp <= ^value and ^acc)
+          "min_ac" ->
+            dynamic([v], v.ac >= ^value and ^acc)
+          "max_ac" ->
+            dynamic([v], v.ac <= ^value and ^acc)
+          "custom" when value == "true" ->
+            dynamic([v], v.custom == true and ^acc)
+          "custom" when value == "false" ->
+            dynamic([v], v.custom == false and ^acc)
+        end
     end
 
-    conditions = unless is_nil(params["min_cr"]) do
-      dynamic([v], v.cr >= ^params["min_cr"] and ^conditions)
-    else
-      conditions
-    end
+    # conditions = unless is_nil(params["elem"]) do
+    #   elem = params["elem"] |> String.capitalize(:ascii)
+    #   dynamic([v], array_contains(v.element, ^elem))
+    # else
+    #   conditions
+    # end
 
-    conditions = unless is_nil(params["max_cr"]) do
-      dynamic([v], v.cr <= ^params["max_cr"] and ^conditions)
-    else
-      conditions
-    end
+    # conditions = unless is_nil(params["min_cr"]) do
+    #   dynamic([v], v.cr >= ^params["min_cr"] and ^conditions)
+    # else
+    #   conditions
+    # end
 
-    conditions = unless is_nil(params["cr"]) do
-      dynamic([v], v.cr == ^params["cr"] and ^conditions)
-    else
-      conditions
-    end
+    # conditions = unless is_nil(params["max_cr"]) do
+    #   dynamic([v], v.cr <= ^params["max_cr"] and ^conditions)
+    # else
+    #   conditions
+    # end
 
-    conditions = unless is_nil(params["min_hp"]) do
-      dynamic([v], v.hp >= ^params["min_hp"] and ^conditions)
-    else
-      conditions
-    end
+    # conditions = unless is_nil(params["cr"]) do
+    #   dynamic([v], v.cr == ^params["cr"] and ^conditions)
+    # else
+    #   conditions
+    # end
 
-    conditions = unless is_nil(params["max_hp"]) do
-      dynamic([v], v.hp <= ^params["max_hp"] and ^conditions)
-    else
-      conditions
-    end
+    # conditions = unless is_nil(params["min_hp"]) do
+    #   dynamic([v], v.hp >= ^params["min_hp"] and ^conditions)
+    # else
+    #   conditions
+    # end
 
-    conditions = unless is_nil(params["min_ac"]) do
-      dynamic([v], v.ac >= ^params["min_ac"] and ^conditions)
-    else
-      conditions
-    end
+    # conditions = unless is_nil(params["max_hp"]) do
+    #   dynamic([v], v.hp <= ^params["max_hp"] and ^conditions)
+    # else
+    #   conditions
+    # end
 
-    conditions = unless is_nil(params["max_ac"]) do
-      dynamic([v], v.ac <= ^params["max_ac"] and ^conditions)
-    else
-      conditions
-    end
+    # conditions = unless is_nil(params["min_ac"]) do
+    #   dynamic([v], v.ac >= ^params["min_ac"] and ^conditions)
+    # else
+    #   conditions
+    # end
 
-    unless is_nil(params["custom"]) do
-      dynamic([v], v.custom == ^params["custom"] and ^conditions)
-    else
-      conditions
-    end
+    # conditions = unless is_nil(params["max_ac"]) do
+    #   dynamic([v], v.ac <= ^params["max_ac"] and ^conditions)
+    # else
+    #   conditions
+    # end
+
+    # unless is_nil(params["custom"]) do
+    #   dynamic([v], v.custom == ^params["custom"] and ^conditions)
+    # else
+    #   conditions
+    # end
 
   end
 end

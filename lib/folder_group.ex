@@ -105,14 +105,20 @@ defmodule ElixirBackend.FolderGroups do
     end
   end
 
-  @spec get_groups_and_ct() :: [{String.t(), %{count: non_neg_integer(), spectators: non_neg_integer()}}]
+  @spec get_groups_and_ct() :: %{String.t() => %{count: non_neg_integer(), spectators: non_neg_integer()}}#[{String.t(), %{count: non_neg_integer(), spectators: non_neg_integer()}}]
   def get_groups_and_ct() do
-    groups = :ets.tab2list(:folder_group_tables)
-    Enum.map(groups, fn {name, {group_tid, _}} ->
+    for {name, {group_tid, _}} <- :ets.tab2list(:folder_group_tables), into: %{} do
       len = :ets.info(group_tid, :size)
       spectators = :ets.select_count(group_tid, [{{:"$1", :"$2"}, [{:==, :"$2", :spectator}], [true]}])
       {name, %{count: len, spectators: spectators}}
-    end)
+    end
+
+
+    #Enum.map(groups, fn {name, {group_tid, _}} ->
+    #  len = :ets.info(group_tid, :size)
+    #  spectators = :ets.select_count(group_tid, [{{:"$1", :"$2"}, [{:==, :"$2", :spectator}], [true]}])
+    #  {name, %{count: len, spectators: spectators}}
+    #end)
   end
 
   defp schedule_cleanup do

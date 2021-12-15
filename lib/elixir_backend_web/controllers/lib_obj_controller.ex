@@ -12,6 +12,7 @@ defmodule ElixirBackendWeb.LibObjController do
 
     objs =
       try do
+        {_, params} = Map.pop(params, "obj") # remove obj from the map
         conds = conn.assigns.kind.gen_conditions(params)
         query = from(conn.assigns.kind, where: ^conds)
 
