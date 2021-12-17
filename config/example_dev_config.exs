@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :elixir_backend,
   bot_node_name: :foo@bar
