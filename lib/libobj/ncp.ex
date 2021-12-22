@@ -2,7 +2,7 @@ defmodule ElixirBackend.LibObj.NCP do
   use Ecto.Schema
   import Ecto.Query, only: [dynamic: 2]
 
-  @derive {Jason.Encoder, only: [:id, :name, :cost, :color, :description]}
+  #@derive {Jason.Encoder, only: [:id, :name, :cost, :color, :description]}
   schema "NaviCust" do
     field :name, :string
     field :description, :string
@@ -19,6 +19,46 @@ defmodule ElixirBackend.LibObj.NCP do
       ]
 
     field :custom, :boolean
+
+  end
+
+  defimpl Jason.Encoder do
+    @ncp_props ~W(id name cost color description custom)a
+
+    def encode(value, opts) do
+      list = Map.to_list(value)
+      |> Stream.filter(fn
+      {key, value} when key in @ncp_props and not is_nil(value) -> true
+      _ -> false
+      end)
+      |> Enum.sort_by(fn {key, _} -> key_to_sort_num(key) end)
+      |> Stream.map(fn {key, value} ->
+        [
+          Jason.Encode.atom(key, opts),
+          ":",
+          Jason.Encoder.encode(value, opts)
+        ]
+      end)
+      |> Enum.intersperse(",")
+
+      [
+        "{",
+        list,
+        "}"
+      ]
+
+    end
+
+    defp key_to_sort_num(key) do
+      case key do
+        :id -> 0
+        :name -> 1
+        :cost -> 2
+        :color -> 3
+        :custom -> 4
+        :description -> 5
+      end
+    end
 
   end
 

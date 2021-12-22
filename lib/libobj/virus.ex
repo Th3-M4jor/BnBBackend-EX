@@ -128,23 +128,23 @@ defmodule ElixirBackend.LibObj.Virus do
   import Ecto.Query, only: [dynamic: 2]
   import ElixirBackend.CustomQuery
 
-  @derive {Jason.Encoder,
-           only: [
-             :id,
-             :name,
-             :element,
-             :hp,
-             :ac,
-             :stats,
-             :skills,
-             :drops,
-             :description,
-             :cr,
-             :abilities,
-             :damage,
-             :dmgelem,
-             :blight
-           ]}
+  # @derive {Jason.Encoder,
+  #          only: [
+  #            :id,
+  #            :name,
+  #            :element,
+  #            :hp,
+  #            :ac,
+  #            :stats,
+  #            :skills,
+  #            :drops,
+  #            :description,
+  #            :cr,
+  #            :abilities,
+  #            :damage,
+  #            :dmgelem,
+  #            :blight
+  #          ]}
   schema "Virus" do
     field :name, :string
     field :element, Element
@@ -161,6 +161,53 @@ defmodule ElixirBackend.LibObj.Virus do
     field :blight, Blight
     field :custom, :boolean
 
+  end
+
+  defimpl Jason.Encoder do
+    @virus_props ~W(id name element hp ac stats skills drops description cr abilities damage dmgelem blight custom)a
+
+    def encode(value, opts) do
+      list = Map.to_list(value)
+      |> Stream.filter(fn
+      {key, value} when key in @virus_props and not is_nil(value) -> true
+      _ -> false
+      end)
+      |> Enum.sort_by(fn {key, _} -> key_to_sort_num(key) end)
+      |> Stream.map(fn {key, value} ->
+        [
+          Jason.Encode.atom(key, opts),
+          ":",
+          Jason.Encoder.encode(value, opts)
+        ]
+      end)
+      |> Enum.intersperse(",")
+
+      [
+        "{",
+        list,
+        "}"
+      ]
+    end
+
+    defp key_to_sort_num(key) do
+      case key do
+        :id -> 0
+        :name -> 1
+        :element -> 2
+        :hp -> 3
+        :ac -> 4
+        :stats -> 5
+        :skills -> 6
+        :drops -> 7
+        :cr -> 8
+        :abilities -> 9
+        :damage -> 10
+        :dmgelem -> 11
+        :blight -> 12
+        :custom -> 13
+        :description -> 14
+      end
+    end
   end
 
   def gen_conditions(params) do
