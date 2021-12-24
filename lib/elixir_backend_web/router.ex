@@ -22,7 +22,6 @@ defmodule ElixirBackendWeb.Router do
 
     # get all chips/viruses/ncps
     get "/:obj", LibObjController, :fetch
-
   end
 
   # Enables LiveDashboard only for development
@@ -32,12 +31,12 @@ defmodule ElixirBackendWeb.Router do
   # If your application does not have an admins-only section yet,
   # you can use Plug.BasicAuth to set up some basic authentication
   # as long as you are also using SSL (which you should anyway).
-  #if Mix.env() in [:dev, :test] do
+  # if Mix.env() in [:dev, :test] do
   #  import Phoenix.LiveDashboard.Router
   #
   #  scope "/" do
   #    pipe_through :browser
   #    live_dashboard "/dashboard", metrics: ElixirBackendWeb.Telemetry
   #  end
-  #end
+  # end
 end

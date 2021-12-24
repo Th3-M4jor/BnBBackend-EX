@@ -10,5 +10,4 @@ config :elixir_backend, ElixirBackendWeb.Endpoint,
 # Do not print debug messages in production
 config :logger, level: :warn
 
-
 import_config "prod.secret.exs"

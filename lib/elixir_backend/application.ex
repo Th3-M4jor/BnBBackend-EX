@@ -13,7 +13,7 @@ defmodule ElixirBackend.Application do
       {Phoenix.PubSub, name: ElixirBackend.PubSub},
       # Start the Endpoint (http/https)
       ElixirBackendWeb.Endpoint,
-      ElixirBackend.FolderGroups,
+      ElixirBackend.FolderGroups
       # Start a worker by calling: ElixirBackend.Worker.start_link(arg)
       # {ElixirBackend.Worker, arg}
     ]

@@ -26,14 +26,23 @@ defmodule ElixirBackend.LibObj.VirusSkills do
   use Ecto.Type
 
   @skills [
+    # Perception
     :per,
+    # Info
     :inf,
+    # Tech
     :tch,
+    # Strength
     :str,
+    # Agility
     :agi,
+    # Endurance
     :end,
+    # Charm
     :chm,
+    # Valor
     :vlr,
+    # Affinity
     :aff
   ]
 
@@ -111,9 +120,10 @@ defmodule ElixirBackend.LibObj.VirusDrops do
   end
 
   def dump(drops) when is_list(drops) do
-    drops = Enum.map(drops, fn [drop, num] ->
-      {drop, num}
-    end)
+    drops =
+      Enum.map(drops, fn [drop, num] ->
+        {drop, num}
+      end)
 
     {:ok, Map.new(drops)}
   end
@@ -128,23 +138,6 @@ defmodule ElixirBackend.LibObj.Virus do
   import Ecto.Query, only: [dynamic: 2]
   import ElixirBackend.CustomQuery
 
-  # @derive {Jason.Encoder,
-  #          only: [
-  #            :id,
-  #            :name,
-  #            :element,
-  #            :hp,
-  #            :ac,
-  #            :stats,
-  #            :skills,
-  #            :drops,
-  #            :description,
-  #            :cr,
-  #            :abilities,
-  #            :damage,
-  #            :dmgelem,
-  #            :blight
-  #          ]}
   schema "Virus" do
     field :name, :string
     field :element, Element
@@ -160,27 +153,27 @@ defmodule ElixirBackend.LibObj.Virus do
     field :dmgelem, Element
     field :blight, Blight
     field :custom, :boolean
-
   end
 
   defimpl Jason.Encoder do
     @virus_props ~W(id name element hp ac stats skills drops description cr abilities damage dmgelem blight custom)a
 
     def encode(value, opts) do
-      list = Map.to_list(value)
-      |> Stream.filter(fn
-      {key, value} when key in @virus_props and not is_nil(value) -> true
-      _ -> false
-      end)
-      |> Enum.sort_by(fn {key, _} -> key_to_sort_num(key) end)
-      |> Stream.map(fn {key, value} ->
-        [
-          Jason.Encode.atom(key, opts),
-          ":",
-          Jason.Encoder.encode(value, opts)
-        ]
-      end)
-      |> Enum.intersperse(",")
+      list =
+        Map.to_list(value)
+        |> Stream.filter(fn
+          {key, value} when key in @virus_props and not is_nil(value) -> true
+          _ -> false
+        end)
+        |> Enum.sort_by(fn {key, _} -> key_to_sort_num(key) end)
+        |> Stream.map(fn {key, value} ->
+          [
+            Jason.Encode.atom(key, opts),
+            ":",
+            Jason.Encoder.encode(value, opts)
+          ]
+        end)
+        |> Enum.intersperse(",")
 
       [
         "{",
@@ -211,87 +204,37 @@ defmodule ElixirBackend.LibObj.Virus do
   end
 
   def gen_conditions(params) do
-    # conditions = true
-
     for {key, value} <- params, reduce: true do
       acc ->
         case key do
           "elem" ->
             elem = String.capitalize(value, :ascii)
             dynamic([v], array_contains(v.element, ^elem) and ^acc)
+
           "min_cr" ->
             dynamic([v], v.cr >= ^value and ^acc)
+
           "max_cr" ->
             dynamic([v], v.cr <= ^value and ^acc)
+
           "min_hp" ->
             dynamic([v], v.hp >= ^value and ^acc)
+
           "max_hp" ->
             dynamic([v], v.hp <= ^value and ^acc)
+
           "min_ac" ->
             dynamic([v], v.ac >= ^value and ^acc)
+
           "max_ac" ->
             dynamic([v], v.ac <= ^value and ^acc)
+
           "custom" when value == "true" ->
             dynamic([v], v.custom == true and ^acc)
+
           "custom" when value == "false" ->
             dynamic([v], v.custom == false and ^acc)
         end
     end
-
-    # conditions = unless is_nil(params["elem"]) do
-    #   elem = params["elem"] |> String.capitalize(:ascii)
-    #   dynamic([v], array_contains(v.element, ^elem))
-    # else
-    #   conditions
-    # end
-
-    # conditions = unless is_nil(params["min_cr"]) do
-    #   dynamic([v], v.cr >= ^params["min_cr"] and ^conditions)
-    # else
-    #   conditions
-    # end
-
-    # conditions = unless is_nil(params["max_cr"]) do
-    #   dynamic([v], v.cr <= ^params["max_cr"] and ^conditions)
-    # else
-    #   conditions
-    # end
-
-    # conditions = unless is_nil(params["cr"]) do
-    #   dynamic([v], v.cr == ^params["cr"] and ^conditions)
-    # else
-    #   conditions
-    # end
-
-    # conditions = unless is_nil(params["min_hp"]) do
-    #   dynamic([v], v.hp >= ^params["min_hp"] and ^conditions)
-    # else
-    #   conditions
-    # end
-
-    # conditions = unless is_nil(params["max_hp"]) do
-    #   dynamic([v], v.hp <= ^params["max_hp"] and ^conditions)
-    # else
-    #   conditions
-    # end
-
-    # conditions = unless is_nil(params["min_ac"]) do
-    #   dynamic([v], v.ac >= ^params["min_ac"] and ^conditions)
-    # else
-    #   conditions
-    # end
-
-    # conditions = unless is_nil(params["max_ac"]) do
-    #   dynamic([v], v.ac <= ^params["max_ac"] and ^conditions)
-    # else
-    #   conditions
-    # end
-
-    # unless is_nil(params["custom"]) do
-    #   dynamic([v], v.custom == ^params["custom"] and ^conditions)
-    # else
-    #   conditions
-    # end
-
   end
 end

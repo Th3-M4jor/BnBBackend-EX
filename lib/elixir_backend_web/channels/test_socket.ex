@@ -27,16 +27,16 @@ defmodule ElixirBackendWeb.TestSocket do
       "initializing test socket\n",
       inspect(state, pretty: true)
     ])
+
     # Now we are effectively inside the process that maintains the socket.
     {:ok, state}
   end
 
   def handle_in({text, opts}, state) do
-
     Logger.debug([
       "handling in test socket\n",
       inspect(text, pretty: true),
-      inspect(opts, pretty: true),
+      inspect(opts, pretty: true)
     ])
 
     {:reply, :ok, {:text, text}, state}
@@ -47,10 +47,7 @@ defmodule ElixirBackendWeb.TestSocket do
   end
 
   def terminate(reason, state) do
-    Logger.debug(["Socket closed\n",
-      inspect(reason, pretty: true),
-      inspect(state, pretty: true)
-    ])
+    Logger.debug(["Socket closed\n", inspect(reason, pretty: true), inspect(state, pretty: true)])
     :ok
   end
 end

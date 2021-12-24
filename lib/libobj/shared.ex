@@ -3,6 +3,14 @@ defmodule ElixirBackend.LibObj.Dice do
   @enforce_keys [:dienum, :dietype]
   defstruct [:dienum, :dietype]
 
+  @typedoc """
+  Represents a dice roll. DieNum is the number of dice to roll, and DieType is the type of dice to roll.
+  """
+  @type t :: %__MODULE__{
+          dienum: non_neg_integer(),
+          dietype: non_neg_integer()
+        }
+
   use Ecto.Type
 
   def type, do: :dice
@@ -15,7 +23,7 @@ defmodule ElixirBackend.LibObj.Dice do
     :error
   end
 
-  @spec load({integer(), integer()} | nil) :: {:ok, %ElixirBackend.LibObj.Dice{} | nil} | :error
+  @spec load({integer(), integer()} | nil) :: {:ok, t() | nil} | :error
   def load({num, size}) when is_integer(num) and is_integer(size) do
     die = %ElixirBackend.LibObj.Dice{dienum: num, dietype: size}
     {:ok, die}
@@ -27,7 +35,7 @@ defmodule ElixirBackend.LibObj.Dice do
 
   def load(_), do: :error
 
-  @spec dump(%ElixirBackend.LibObj.Dice{} | nil) :: :error | {:ok, {integer(), integer()} | nil}
+  @spec dump(t() | nil) :: :error | {:ok, {non_neg_integer(), non_neg_integer()} | nil}
   def dump(%ElixirBackend.LibObj.Dice{} = dice) do
     data = {dice.dienum, dice.dietype}
     {:ok, data}
@@ -38,12 +46,24 @@ defmodule ElixirBackend.LibObj.Dice do
   end
 
   def dump(_), do: :error
-
 end
 
 defmodule ElixirBackend.LibObj.Element do
-
   use Ecto.Type
+
+  @type t ::
+          :fire
+          | :aqua
+          | :elec
+          | :wood
+          | :wind
+          | :sword
+          | :break
+          | :cursor
+          | :recov
+          | :invis
+          | :object
+          | :null
 
   @elements [
     :fire,
@@ -58,12 +78,13 @@ defmodule ElixirBackend.LibObj.Element do
     :invis,
     :object,
     :null
-]
+  ]
 
   def type, do: :element
 
   def cast(elem) when is_list(elem) do
     deduped = Enum.dedup(elem)
+
     if Enum.all?(deduped, &(&1 in @elements)) do
       {:ok, deduped}
     else
@@ -81,7 +102,11 @@ defmodule ElixirBackend.LibObj.Element do
   def load(_elem), do: :error
 
   def dump(elem) when is_list(elem) do
-    as_strings = Enum.map(elem, fn element -> String.Chars.to_string(element) |> String.capitalize() end)
+    as_strings =
+      Enum.map(elem, fn element ->
+        String.Chars.to_string(element) |> String.capitalize(:ascii)
+      end)
+
     {:ok, as_strings}
   end
 
@@ -92,23 +117,46 @@ defmodule ElixirBackend.LibObj.Element do
   end
 
   def convert(elem) when is_binary(elem) do
-    String.downcase(elem, :ascii) |> String.to_existing_atom()
+    case String.downcase(elem, :ascii) do
+      "fire" -> :fire
+      "aqua" -> :aqua
+      "elec" -> :elec
+      "wood" -> :wood
+      "wind" -> :wind
+      "sword" -> :sword
+      "break" -> :break
+      "cursor" -> :cursor
+      "recov" -> :recov
+      "invis" -> :invis
+      "object" -> :object
+      "null" -> :null
+    end
   end
-
 end
 
 defmodule ElixirBackend.LibObj.Skill do
   use Ecto.Type
 
+  @type t :: :per | :inf | :tch | :str | :agi | :end | :chm | :vlr | :aff
+
   @skills [
+    # Perception
     :per,
+    # Info
     :inf,
+    # Tech
     :tch,
+    # Strength
     :str,
+    # Agility
     :agi,
+    # Endurance
     :end,
+    # Charm
     :chm,
+    # Valor
     :vlr,
+    # Affinity
     :aff
   ]
 
@@ -116,6 +164,7 @@ defmodule ElixirBackend.LibObj.Skill do
 
   def cast(skills) when is_list(skills) do
     deduped = Enum.dedup(skills)
+
     if Enum.all?(deduped, &(&1 in @skills)) do
       {:ok, deduped}
     else
@@ -146,16 +195,21 @@ defmodule ElixirBackend.LibObj.Skill do
   def convert(skill) when is_binary(skill) do
     String.downcase(skill, :ascii) |> String.to_existing_atom()
   end
-
 end
 
 defmodule ElixirBackend.LibObj.Blight do
+  use Ecto.Type
+  alias ElixirBackend.LibObj.{Element, Dice}
+
   @derive Jason.Encoder
   @enforce_keys [:elem, :dmg, :duration]
   defstruct [:elem, :dmg, :duration]
 
-  use Ecto.Type
-  alias ElixirBackend.LibObj.{Element, Dice}
+  @type t :: %__MODULE__{
+          elem: Element.t(),
+          dmg: Dice.t() | nil,
+          duration: Dice.t() | nil
+        }
 
   def type, do: :blight
 
@@ -191,5 +245,4 @@ defmodule ElixirBackend.LibObj.Blight do
   end
 
   def dump(_), do: :error
-
 end

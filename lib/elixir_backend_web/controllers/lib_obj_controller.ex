@@ -10,26 +10,18 @@ defmodule ElixirBackendWeb.LibObjController do
     # chips = ElixirBackend.Repo.all(Battlechip)
     # json(conn, chips)
 
-    objs =
-      try do
-        {_, params} = Map.pop(params, "obj") # remove obj from the map
-        conds = conn.assigns.kind.gen_conditions(params)
-        query = from(conn.assigns.kind, where: ^conds)
+    try do
+      # remove obj from the map
+      {_, params} = Map.pop(params, "obj")
+      conds = conn.assigns.kind.gen_conditions(params)
+      query = from(conn.assigns.kind, where: ^conds)
 
-        {:ok, ElixirBackend.Repo.all(query)}
-      rescue
-        e ->
-          {:error, e}
-      end
-
-    case objs do
-    {:ok, objs} ->
+      objs = ElixirBackend.Repo.all(query)
       render(conn, "libobj.json", kind: kind, objs: objs)
-    {:error, _e} ->
-      send_resp(conn, 400, "bad parameter")
+    rescue
+      _e ->
+        send_resp(conn, 400, "bad parameter")
     end
-
-    # json(conn, objs)
   end
 
   defp verify_params(conn, _) do

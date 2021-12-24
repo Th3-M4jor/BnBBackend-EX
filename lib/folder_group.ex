@@ -22,29 +22,32 @@ defmodule ElixirBackend.FolderGroups do
   end
 
   @impl true
-  @spec handle_call({:add, String.t}, GenServer.from, :ets.tab()) :: {:reply, :ets.tab(), :ets.tab()}
+  @spec handle_call({:add, String.t()}, GenServer.from(), :ets.tab()) ::
+          {:reply, :ets.tab(), :ets.tab()}
   def handle_call({:add, name}, _from, tid) do
     Logger.debug(["Creating group: ", name])
 
     group_id =
       case :ets.lookup(tid, name) do
         [] ->
+          # No group with this name exists yet, create it
           group_table =
             :ets.new(:foo, [:set, :public, read_concurrency: true, write_concurrency: true])
 
           now = System.monotonic_time() |> System.convert_time_unit(:native, :millisecond)
+          # insert new group into global table
           :ets.insert(tid, {name, {group_table, now}})
           group_table
 
-        [{_, {group_table, _}}] ->
-          group_table
+        [{_group_name, {group_table_id, _timeout}}] ->
+          group_table_id
       end
 
     {:reply, group_id, tid}
   end
 
   @impl true
-  @spec handle_cast({:left, String.t, String.t}, :ets.tab()) :: {:noreply, :ets.tab()}
+  @spec handle_cast({:left, String.t(), String.t()}, :ets.tab()) :: {:noreply, :ets.tab()}
   def handle_cast({:left, group_name, player_name}, tid) do
     Logger.debug(["Player ", player_name, " left group: ", group_name])
     group_table = :ets.lookup(tid, group_name)
@@ -82,11 +85,13 @@ defmodule ElixirBackend.FolderGroups do
 
   @spec insert_player_data_and_get(String.t(), String.t(), list()) :: {:ok, list()} | :error
   def insert_player_data_and_get(group_name, player_name, data) do
-    #[{_, {group_tid, _}}] = :ets.lookup(:folder_group_tables, group_name)
+    # [{_, {group_tid, _}}] = :ets.lookup(:folder_group_tables, group_name)
     group = :ets.lookup(:folder_group_tables, group_name)
+
     case group do
       [] ->
         :error
+
       [{_, {group_tid, _}}] ->
         :ets.insert(group_tid, {player_name, data})
         {:ok, :ets.tab2list(group_tid)}
@@ -96,37 +101,39 @@ defmodule ElixirBackend.FolderGroups do
   @spec insert_spectator_and_get(String.t(), String.t()) :: {:ok, list()} | :error
   def insert_spectator_and_get(group_name, player_name) do
     group = :ets.lookup(:folder_group_tables, group_name)
+
     case group do
       [] ->
         :error
+
       [{_, {group_tid, _}}] ->
         :ets.insert(group_tid, {player_name, :spectator})
         {:ok, :ets.tab2list(group_tid)}
     end
   end
 
-  @spec get_groups_and_ct() :: %{String.t() => %{count: non_neg_integer(), spectators: non_neg_integer()}}#[{String.t(), %{count: non_neg_integer(), spectators: non_neg_integer()}}]
+  @spec get_groups_and_ct() :: %{
+          String.t() => %{count: non_neg_integer(), spectators: non_neg_integer()}
+        }
   def get_groups_and_ct() do
     for {name, {group_tid, _}} <- :ets.tab2list(:folder_group_tables), into: %{} do
       len = :ets.info(group_tid, :size)
-      spectators = :ets.select_count(group_tid, [{{:"$1", :"$2"}, [{:==, :"$2", :spectator}], [true]}])
+
+      spectators =
+        :ets.select_count(group_tid, [{{:"$1", :"$2"}, [{:==, :"$2", :spectator}], [true]}])
+
       {name, %{count: len, spectators: spectators}}
     end
-
-
-    #Enum.map(groups, fn {name, {group_tid, _}} ->
-    #  len = :ets.info(group_tid, :size)
-    #  spectators = :ets.select_count(group_tid, [{{:"$1", :"$2"}, [{:==, :"$2", :spectator}], [true]}])
-    #  {name, %{count: len, spectators: spectators}}
-    #end)
   end
 
   defp schedule_cleanup do
     Process.send_after(self(), :cleanup, :timer.hours(2))
   end
 
-  @spec player_left(String.t, String.t, [{String.t, {:ets.tab, integer}}], :ets.tab()) :: any()
+  @spec player_left(String.t(), String.t(), [{String.t(), {:ets.tab(), integer}}], :ets.tab()) ::
+          any()
   defp player_left(_group_name, _player_name, [], _tid) do
+    # empty list, do nothing
     :noop
   end
 
@@ -144,7 +151,9 @@ defmodule ElixirBackend.FolderGroups do
           [player_name, folder]
         end)
 
-      ElixirBackendWeb.Endpoint.broadcast("room:#{group_name}", "player_left", %{"body" => players})
+      ElixirBackendWeb.Endpoint.broadcast("room:#{group_name}", "player_left", %{
+        "body" => players
+      })
     end
   end
 end

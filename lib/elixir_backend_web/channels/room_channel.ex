@@ -7,12 +7,19 @@ defmodule ElixirBackendWeb.RoomChannel do
   def join("room:" <> group_name, %{"name" => player_name}, socket) do
     Logger.debug("Joining room: #{group_name} Player name: #{player_name}\n")
 
+    # trim whitespace
+    player_name = String.trim(player_name)
+    group_name = String.trim(group_name)
+
+    # check if group/player name is empty or too long
     cond do
-      String.trim(group_name) == "" or
-        String.length(group_name) > 30 or
-        String.trim(player_name) == "" or
+      group_name == "" or
+          player_name == "" ->
+        {:error, %{reason: "Empty player or group name"}}
+
+      String.length(group_name) > 30 or
           String.length(player_name) > 30 ->
-        {:error, %{reason: "too long of a name"}}
+        {:error, %{reason: "Player or group name too long"}}
 
       name_used?(group_name, player_name) ->
         {:error, %{reason: "name already in use"}}
@@ -31,7 +38,7 @@ defmodule ElixirBackendWeb.RoomChannel do
   def handle_in("spectate", _payload, socket) do
     Logger.debug([
       "Recieved spectate for ",
-      socket.assigns.player_name,
+      socket.assigns.player_name
     ])
 
     players =
@@ -40,22 +47,21 @@ defmodule ElixirBackendWeb.RoomChannel do
         socket.assigns.player_name
       )
 
-      unless players == :error do
-        res =
-          elem(players, 1)
-          |> Stream.filter(fn {player_name, folder} ->
-            player_name != socket.assigns.player_name and folder != :spectator
-          end)
-          |> Enum.map(fn {player_name, folder} ->
-            [player_name, folder]
-          end)
+    unless players == :error do
+      res =
+        elem(players, 1)
+        |> Stream.filter(fn {player_name, folder} ->
+          player_name != socket.assigns.player_name and folder != :spectator
+        end)
+        |> Enum.map(fn {player_name, folder} ->
+          [player_name, folder]
+        end)
 
-        broadcast!(socket, "joined", %{"body" => res})
-        {:reply, :ok, socket}
-      else
-        {:stop, "Group error", {:error, "Group missing"}, socket}
-      end
-
+      broadcast!(socket, "joined", %{"body" => res})
+      {:reply, :ok, socket}
+    else
+      {:stop, "Group error", {:error, "Group missing"}, socket}
+    end
   end
 
   def handle_in("ready", %{"body" => data}, socket) when is_list(data) do
