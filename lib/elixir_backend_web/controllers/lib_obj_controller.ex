@@ -19,6 +19,10 @@ defmodule ElixirBackendWeb.LibObjController do
       objs = ElixirBackend.Repo.all(query)
       render(conn, "libobj.json", kind: kind, objs: objs)
     rescue
+      e in ElixirBackend.LibObj.BadKey ->
+        send_resp(conn, 400, e.message)
+      e in ElixirBackend.LibObj.ImproperKey ->
+        send_resp(conn, 400, e.message)
       _e ->
         send_resp(conn, 400, "bad parameter")
     end

@@ -1,8 +1,7 @@
 defmodule ElixirBackend.Repo do
   use Ecto.Repo,
     otp_app: :elixir_backend,
-    adapter: Ecto.Adapters.Postgres,
-    read_only: true
+    adapter: Ecto.Adapters.Postgres
 end
 
 defmodule ElixirBackend.CustomQuery do

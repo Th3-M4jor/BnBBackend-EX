@@ -37,10 +37,12 @@ defmodule ElixirBackend.LibObj.Battlechip do
     field :class, Ecto.Enum, values: [standard: "Standard", mega: "Mega", giga: "Giga"]
 
     field :custom, :boolean
+
+    field :cr, :integer
   end
 
   defimpl Jason.Encoder do
-    @chip_props ~W(id name elem skill range hits targets effect effduration blight damage kind class description custom)a
+    @chip_props ~W(id name elem skill range hits targets effect effduration blight damage kind class cr description custom)a
 
     def encode(value, opts) do
       list =
@@ -81,14 +83,19 @@ defmodule ElixirBackend.LibObj.Battlechip do
         :damage -> 10
         :kind -> 11
         :class -> 12
-        :custom -> 13
-        :description -> 14
+        :cr -> 13
+        :custom -> 14
+        :description -> 15
       end
     end
   end
 
-  def gen_conditions(params) do
-    # conditions = true
+  def gen_conditions(params) when is_map(params) do
+
+    valid_keys = ~w(elem skill range class kind custom cr min_cr max_cr)
+
+    ElixirBackend.LibObj.Query.validate_keys(params, valid_keys)
+    ElixirBackend.LibObj.Query.check_mutually_exclusive(params, "cr", ["min_cr", "max_cr"])
 
     for {key, value} <- params, reduce: true do
       acc ->
@@ -112,6 +119,15 @@ defmodule ElixirBackend.LibObj.Battlechip do
           "kind" ->
             kind = String.capitalize(value, :ascii)
             dynamic([b], b.kind == ^kind and ^acc)
+
+          "cr" ->
+            dynamic([b], b.cr == ^value and ^acc)
+
+          "min_cr" ->
+            dynamic([b], b.cr >= ^value and ^acc)
+
+          "max_cr" ->
+            dynamic([b], b.cr <= ^value and ^acc)
 
           "custom" when value == "true" ->
             dynamic([b], b.custom == true and ^acc)

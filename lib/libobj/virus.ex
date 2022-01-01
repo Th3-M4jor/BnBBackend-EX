@@ -204,6 +204,12 @@ defmodule ElixirBackend.LibObj.Virus do
   end
 
   def gen_conditions(params) do
+
+    valid_keys = ~w(elem min_cr max_cr cr min_hp max_hp min_ac max_ac custom)
+
+    ElixirBackend.LibObj.Query.validate_keys(params, valid_keys)
+    ElixirBackend.LibObj.Query.check_mutually_exclusive(params, "cr", ["min_cr", "max_cr"])
+
     for {key, value} <- params, reduce: true do
       acc ->
         case key do
@@ -216,6 +222,9 @@ defmodule ElixirBackend.LibObj.Virus do
 
           "max_cr" ->
             dynamic([v], v.cr <= ^value and ^acc)
+
+          "cr" ->
+            dynamic([v], v.cr == ^value and ^acc)
 
           "min_hp" ->
             dynamic([v], v.hp >= ^value and ^acc)

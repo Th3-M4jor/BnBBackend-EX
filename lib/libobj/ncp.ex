@@ -62,6 +62,12 @@ defmodule ElixirBackend.LibObj.NCP do
   end
 
   def gen_conditions(params) do
+
+    valid_keys = ~w(min_cost max_cost cost color custom)
+
+    ElixirBackend.LibObj.Query.validate_keys(params, valid_keys)
+    ElixirBackend.LibObj.Query.check_mutually_exclusive(params, "cost", ["min_cost", "max_cost"])
+
     for {key, value} <- params, reduce: true do
       acc ->
         case key do
