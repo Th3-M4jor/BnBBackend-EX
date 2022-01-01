@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 12.8 (Ubuntu 12.8-0ubuntu0.20.04.1)
--- Dumped by pg_dump version 12.8 (Ubuntu 12.8-0ubuntu0.20.04.1)
+-- Dumped from database version 12.9 (Ubuntu 12.9-0ubuntu0.20.04.1)
+-- Dumped by pg_dump version 12.9 (Ubuntu 12.9-0ubuntu0.20.04.1)
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -87,7 +87,8 @@ CREATE TYPE public."ChipEffect" AS ENUM (
     'Paralysis',
     'Panic',
     'Heal',
-    'Dmg Boost'
+    'Dmg Boost',
+    'Move'
 );
 
 
@@ -168,14 +169,16 @@ CREATE TABLE public."Battlechip" (
     skill public."Skill"[],
     range public."Range" NOT NULL,
     hits character varying(12),
-    targets integer,
+    targets character varying(16),
     description text,
     effect public."ChipEffect"[],
     effduration integer,
     blight public."Blight",
     damage public."Dice",
     kind public."ChipType" NOT NULL,
-    class public."ChipClass" NOT NULL
+    class public."ChipClass" NOT NULL,
+    custom boolean DEFAULT false NOT NULL,
+    cr integer DEFAULT 0 NOT NULL
 );
 
 
@@ -208,7 +211,8 @@ CREATE TABLE public."NaviCust" (
     name character varying NOT NULL,
     description text NOT NULL,
     size integer NOT NULL,
-    color public."Color" NOT NULL
+    color public."Color" NOT NULL,
+    custom boolean DEFAULT false NOT NULL
 );
 
 
@@ -250,7 +254,8 @@ CREATE TABLE public."Virus" (
     abilities character varying(64)[],
     damage public."Dice",
     dmgelem public."Element"[],
-    blight public."Blight"
+    blight public."Blight",
+    custom boolean DEFAULT false NOT NULL
 );
 
 
@@ -357,3 +362,4 @@ ALTER TABLE ONLY public.schema_migrations
 -- PostgreSQL database dump complete
 --
 
+INSERT INTO public."schema_migrations" (version) VALUES (20220101212038);
