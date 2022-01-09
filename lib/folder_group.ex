@@ -1,4 +1,16 @@
 defmodule ElixirBackend.FolderGroups do
+  @moduledoc """
+  Module for managing folder groups.
+
+  Stores table_ids of all groups in a single ets table.
+
+  Calling with `{:add, group_name}` will create a new group table and return the table_id,
+  if one already exists, it will return the existing table_id.
+
+  Global table is keyed by group_name and stores the tid if the group table as well as it's creation time for garbage collection.
+
+  Groups that have existed longer than 12 hours are force closed.
+  """
   require Logger
 
   use GenServer
@@ -62,9 +74,22 @@ defmodule ElixirBackend.FolderGroups do
       (System.monotonic_time() |> System.convert_time_unit(:native, :millisecond)) -
         :timer.hours(12)
 
+    schedule_cleanup()
+
     pairs =
       :ets.select(tid, [{{:"$1", {:"$2", :"$3"}}, [{:<, :"$3", limit}], [{{:"$1", :"$2"}}]}])
 
+
+    if Enum.empty?(pairs) do
+      {:noreply, tid}
+    else
+      {:noreply, tid, {:continue, {:cleanup, pairs}}}
+    end
+  end
+
+  @impl true
+  @spec handle_continue({:cleanup, [{String.t(), :ets.tab()}]}, :ets.tab()) :: {:noreply, :ets.tab()}
+  def handle_continue({:cleanup, pairs}, tid) do
     bot_node = Application.fetch_env!(:elixir_backend, :bot_node_name)
 
     Enum.each(pairs, fn {name, table} ->
@@ -78,9 +103,7 @@ defmodule ElixirBackend.FolderGroups do
       :ets.delete(table)
     end)
 
-    schedule_cleanup()
-
-    {:noreply, tid}
+      {:noreply, tid}
   end
 
   @spec insert_player_data_and_get(String.t(), String.t(), list()) :: {:ok, list()} | :error
@@ -115,7 +138,7 @@ defmodule ElixirBackend.FolderGroups do
   @spec get_groups_and_ct() :: %{
           String.t() => %{count: non_neg_integer(), spectators: non_neg_integer()}
         }
-  def get_groups_and_ct() do
+  def get_groups_and_ct do
     for {name, {group_tid, _}} <- :ets.tab2list(:folder_group_tables), into: %{} do
       len = :ets.info(group_tid, :size)
 

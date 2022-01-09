@@ -1,4 +1,7 @@
 defmodule ElixirBackendWeb.RoomChannel do
+  @moduledoc """
+  Websocket channel for Folder groups.
+  """
   require Logger
 
   use Phoenix.Channel
@@ -47,7 +50,9 @@ defmodule ElixirBackendWeb.RoomChannel do
         socket.assigns.player_name
       )
 
-    unless players == :error do
+    if players == :error do
+      {:stop, "Group error", {:error, "Group missing"}, socket}
+    else
       res =
         elem(players, 1)
         |> Stream.filter(fn {player_name, folder} ->
@@ -59,8 +64,6 @@ defmodule ElixirBackendWeb.RoomChannel do
 
       broadcast!(socket, "joined", %{"body" => res})
       {:reply, :ok, socket}
-    else
-      {:stop, "Group error", {:error, "Group missing"}, socket}
     end
   end
 
@@ -79,7 +82,9 @@ defmodule ElixirBackendWeb.RoomChannel do
         data
       )
 
-    unless players == :error do
+    if players == :error do
+      {:stop, "Group error", {:error, "Group missing"}, socket}
+    else
       res =
         elem(players, 1)
         |> Enum.map(fn {player_name, folder} ->
@@ -88,8 +93,6 @@ defmodule ElixirBackendWeb.RoomChannel do
 
       broadcast!(socket, "joined", %{"body" => res})
       {:reply, :ok, socket}
-    else
-      {:stop, "Group error", {:error, "Group missing"}, socket}
     end
   end
 
@@ -113,7 +116,9 @@ defmodule ElixirBackendWeb.RoomChannel do
         data
       )
 
-    unless players == :error do
+    if players == :error do
+      {:stop, "Group error", {:error, "Group missing"}, socket}
+    else
       res =
         elem(players, 1)
         |> Enum.map(fn {player_name, folder} ->
@@ -122,8 +127,6 @@ defmodule ElixirBackendWeb.RoomChannel do
 
       broadcast!(socket, "updated", %{"body" => res, source: socket.assigns.player_name})
       {:reply, :ok, socket}
-    else
-      {:stop, "Group error", {:error, "Group missing"}, socket}
     end
   end
 

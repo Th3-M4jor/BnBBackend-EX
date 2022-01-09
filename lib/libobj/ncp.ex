@@ -1,4 +1,8 @@
 defmodule ElixirBackend.LibObj.NCP do
+  @moduledoc """
+  Ecto type mapping for Navi Customizer parts.
+  """
+
   use Ecto.Schema
   import Ecto.Query, only: [dynamic: 2]
 

@@ -6,10 +6,10 @@ defmodule ElixirBackendWeb.GroupsController do
   def index(conn, _) do
     groups = FolderGroups.get_groups_and_ct()
 
-    unless map_size(groups) == 0 do
-      json(conn, groups)
-    else
+    if map_size(groups) == 0 do
       send_resp(conn, 204, "")
+    else
+      json(conn, groups)
     end
   end
 end

@@ -1,4 +1,8 @@
 defmodule ElixirBackend.LibObj.Dice do
+  @moduledoc """
+  Ecto Type mapping for die rolls.
+  """
+
   @derive Jason.Encoder
   @enforce_keys [:dienum, :dietype]
   defstruct [:dienum, :dietype]
@@ -49,6 +53,9 @@ defmodule ElixirBackend.LibObj.Dice do
 end
 
 defmodule ElixirBackend.LibObj.Element do
+  @moduledoc """
+  Ecto Type mapping for all the elements in the game.
+  """
   use Ecto.Type
 
   @type t ::
@@ -135,6 +142,9 @@ defmodule ElixirBackend.LibObj.Element do
 end
 
 defmodule ElixirBackend.LibObj.Skill do
+  @moduledoc """
+  Ecto type mapping for all virus skills.
+  """
   use Ecto.Type
 
   @type t :: :per | :inf | :tch | :str | :agi | :end | :chm | :vlr | :aff
@@ -198,6 +208,9 @@ defmodule ElixirBackend.LibObj.Skill do
 end
 
 defmodule ElixirBackend.LibObj.Blight do
+  @moduledoc """
+  Ecto Type mapping for Blight effects.
+  """
   use Ecto.Type
   alias ElixirBackend.LibObj.{Element, Dice}
 
@@ -248,6 +261,9 @@ defmodule ElixirBackend.LibObj.Blight do
 end
 
 defmodule ElixirBackend.LibObj.BadKey do
+  @moduledoc """
+  Defines the error raised when an invalid query parameter is used
+  """
   defexception [:message]
 
   @impl true
@@ -258,6 +274,11 @@ defmodule ElixirBackend.LibObj.BadKey do
 end
 
 defmodule ElixirBackend.LibObj.ImproperKey do
+  @moduledoc """
+  Defines the error raised when a query parameter conflicts
+  with another query parameter.
+  """
+
   defexception [:message]
 
   @impl true
@@ -268,6 +289,10 @@ defmodule ElixirBackend.LibObj.ImproperKey do
 end
 
 defmodule ElixirBackend.LibObj.Query do
+  @moduledoc """
+  Utility functions for verifying query parameters.
+  """
+
   alias ElixirBackend.LibObj.{BadKey, ImproperKey}
 
   @spec check_mutually_exclusive(params :: map(), any(), [any()]) :: :ok | no_return()

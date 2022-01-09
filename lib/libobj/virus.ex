@@ -1,4 +1,7 @@
 defmodule ElixirBackend.LibObj.VirusStats do
+  @moduledoc """
+  Ecto type mapping for a virus's stats.
+  """
   use Ecto.Type
 
   def type, do: :virus_stats
@@ -23,6 +26,10 @@ defmodule ElixirBackend.LibObj.VirusStats do
 end
 
 defmodule ElixirBackend.LibObj.VirusSkills do
+  @moduledoc """
+  Ecto Type mapping for a Virus's Skills.
+  """
+
   use Ecto.Type
 
   @skills [
@@ -87,6 +94,10 @@ defmodule ElixirBackend.LibObj.VirusSkills do
 end
 
 defmodule ElixirBackend.LibObj.VirusDrops do
+  @moduledoc """
+  Ecto Type mapping for Virus Drops.
+  """
+
   use Ecto.Type
 
   def type, do: :virus_drops
@@ -132,6 +143,10 @@ defmodule ElixirBackend.LibObj.VirusDrops do
 end
 
 defmodule ElixirBackend.LibObj.Virus do
+  @moduledoc """
+  Ecto schema mapping for a Virus.
+  """
+
   alias ElixirBackend.LibObj.{Element, Blight, Dice, VirusStats, VirusSkills, VirusDrops}
 
   use Ecto.Schema

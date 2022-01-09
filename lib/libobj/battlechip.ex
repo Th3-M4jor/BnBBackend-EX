@@ -1,4 +1,7 @@
 defmodule ElixirBackend.LibObj.Battlechip do
+  @moduledoc """
+  Ecto Type mapping for battlechips
+  """
   alias ElixirBackend.LibObj.{Element, Dice, Blight, Skill}
 
   use Ecto.Schema
