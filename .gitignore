@@ -34,5 +34,8 @@ elixir_backend-*.tar
 
 COOKIE
 
+#ignore vm config files
+/rel/
+
 # Ignore log files
 nohup.out
