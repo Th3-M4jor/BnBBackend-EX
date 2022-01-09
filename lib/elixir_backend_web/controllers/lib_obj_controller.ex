@@ -7,25 +7,22 @@ defmodule ElixirBackendWeb.LibObjController do
   plug :verify_params
 
   def fetch(conn, %{"obj" => kind} = params) do
-    # chips = ElixirBackend.Repo.all(Battlechip)
-    # json(conn, chips)
+    # remove obj from the map
+    {_, params} = Map.pop(params, "obj")
+    conds = conn.assigns.kind.gen_conditions(params)
+    query = from(conn.assigns.kind, where: ^conds)
 
-    try do
-      # remove obj from the map
-      {_, params} = Map.pop(params, "obj")
-      conds = conn.assigns.kind.gen_conditions(params)
-      query = from(conn.assigns.kind, where: ^conds)
+    objs = ElixirBackend.Repo.all(query)
+    render(conn, "libobj.json", kind: kind, objs: objs)
+  rescue
+    e in ElixirBackend.LibObj.BadKey ->
+      send_resp(conn, 400, e.message)
 
-      objs = ElixirBackend.Repo.all(query)
-      render(conn, "libobj.json", kind: kind, objs: objs)
-    rescue
-      e in ElixirBackend.LibObj.BadKey ->
-        send_resp(conn, 400, e.message)
-      e in ElixirBackend.LibObj.ImproperKey ->
-        send_resp(conn, 400, e.message)
-      _e ->
-        send_resp(conn, 400, "bad parameter")
-    end
+    e in ElixirBackend.LibObj.ImproperKey ->
+      send_resp(conn, 400, e.message)
+
+    _e ->
+      send_resp(conn, 400, "bad parameter")
   end
 
   defp verify_params(conn, _) do
