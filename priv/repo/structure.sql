@@ -359,7 +359,15 @@ ALTER TABLE ONLY public.schema_migrations
 
 
 --
+-- Name: Virus_name_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX "Virus_name_index" ON public."Virus" USING btree (name);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
 INSERT INTO public."schema_migrations" (version) VALUES (20220101212038);
+INSERT INTO public."schema_migrations" (version) VALUES (20220120043139);
