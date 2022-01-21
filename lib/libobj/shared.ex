@@ -23,6 +23,10 @@ defmodule ElixirBackend.LibObj.Dice do
     {:ok, dice}
   end
 
+  def cast({dienum, dietype}) when is_integer(dienum) and is_integer(dietype) do
+    {:ok, %__MODULE__{dienum: dienum, dietype: dietype}}
+  end
+
   def cast(_) do
     :error
   end
@@ -99,11 +103,27 @@ defmodule ElixirBackend.LibObj.Element do
     end
   end
 
+  def cast(elem) when elem in @elements do
+    {:ok, [elem]}
+  end
+
   def cast(_elem), do: :error
 
-  def load(elem) when is_list(elem) do
-    as_atoms = Enum.map(elem, &convert/1)
-    {:ok, as_atoms}
+  def load(elems) when is_list(elems) do
+    res =
+      Enum.reduce_while(elems, [], fn elem, acc ->
+        case convert(elem) do
+          # list append here is fine, since there are only 12 elements
+          {:ok, elem} -> {:cont, acc ++ [elem]}
+          :error -> {:halt, :error}
+        end
+      end)
+
+    if res == :error do
+      :error
+    else
+      {:ok, res}
+    end
   end
 
   def load(_elem), do: :error
@@ -119,31 +139,35 @@ defmodule ElixirBackend.LibObj.Element do
 
   def dump(_elem), do: :error
 
-  def convert(elem) when is_atom(elem) do
-    elem
+  @spec convert(any) :: :error | {:ok, t()}
+  def convert(elem) when elem in @elements do
+    {:ok, elem}
   end
 
   def convert(elem) when is_binary(elem) do
     case String.downcase(elem, :ascii) do
-      "fire" -> :fire
-      "aqua" -> :aqua
-      "elec" -> :elec
-      "wood" -> :wood
-      "wind" -> :wind
-      "sword" -> :sword
-      "break" -> :break
-      "cursor" -> :cursor
-      "recov" -> :recov
-      "invis" -> :invis
-      "object" -> :object
-      "null" -> :null
+      "fire" -> {:ok, :fire}
+      "aqua" -> {:ok, :aqua}
+      "elec" -> {:ok, :elec}
+      "wood" -> {:ok, :wood}
+      "wind" -> {:ok, :wind}
+      "sword" -> {:ok, :sword}
+      "break" -> {:ok, :break}
+      "cursor" -> {:ok, :cursor}
+      "recov" -> {:ok, :recov}
+      "invis" -> {:ok, :invis}
+      "object" -> {:ok, :object}
+      "null" -> {:ok, :null}
+      _ -> :error
     end
   end
+
+  def convert(_elem), do: :error
 end
 
 defmodule ElixirBackend.LibObj.Skill do
   @moduledoc """
-  Ecto type mapping for all virus skills.
+  Ecto type mapping for all virus/battlechip skills.
   """
   use Ecto.Type
 
@@ -230,16 +254,26 @@ defmodule ElixirBackend.LibObj.Blight do
     {:ok, blight}
   end
 
+  def cast(nil) do
+    {:ok, nil}
+  end
+
+  def cast({elem, dmg, duration}) do
+    load({elem, dmg, duration})
+  end
+
   def cast(_) do
     :error
   end
 
   def load({elem, dmg, duration}) do
-    elem = Element.convert(elem)
-    {:ok, dmg} = Dice.load(dmg)
-    {:ok, duration} = Dice.load(duration)
-    blight = %ElixirBackend.LibObj.Blight{elem: elem, dmg: dmg, duration: duration}
-    {:ok, blight}
+    with {:ok, elem} <- Element.convert(elem),
+         {:ok, dmg} <- Dice.load(dmg),
+         {:ok, duration} <- Dice.load(duration) do
+      {:ok, %ElixirBackend.LibObj.Blight{elem: elem, dmg: dmg, duration: duration}}
+    else
+      _ -> :error
+    end
   end
 
   def load(nil) do
@@ -297,7 +331,6 @@ defmodule ElixirBackend.LibObj.Query do
 
   @spec check_mutually_exclusive(params :: map(), any(), [any()]) :: :ok | no_return()
   def check_mutually_exclusive(params, limiter, improper_keys) when is_map_key(params, limiter) do
-
     Enum.each(improper_keys, fn improper_key ->
       if is_map_key(params, improper_key) do
         raise ImproperKey, {limiter, improper_key}
