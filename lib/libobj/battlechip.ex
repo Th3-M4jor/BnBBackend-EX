@@ -19,7 +19,27 @@ defmodule ElixirBackend.LibObj.Battlechip do
     field :hits, :string
     field :targets, :string
     field :description, :string
-    field :effect, {:array, :string}
+
+    field :effect, {:array, Ecto.Enum},
+      values: [
+        :Stagger,
+        :Blind,
+        :Confuse,
+        :Lock,
+        :Shield,
+        :Barrier,
+        :"AC Pierce",
+        :"AC Down",
+        :Weakness,
+        :Aura,
+        :Invisible,
+        :Paralysis,
+        :Panic,
+        :Heal,
+        :"Dmg Boost",
+        :Move
+      ]
+
     field :effduration, :integer
     field :blight, Blight
     field :damage, Dice
@@ -95,11 +115,10 @@ defmodule ElixirBackend.LibObj.Battlechip do
 
   @valid_keys ~W(name elem skill range hits targets description effect effduration blight damage kind class custom cr)a
   def validate_changeset!(keywords) when is_list(keywords) do
-      Keyword.validate!(keywords, @valid_keys)
+    Keyword.validate!(keywords, @valid_keys)
   end
 
   def gen_conditions(params) when is_map(params) do
-
     valid_keys = ~w(elem skill range class kind custom cr min_cr max_cr)
 
     ElixirBackend.LibObj.Query.validate_keys(params, valid_keys)
