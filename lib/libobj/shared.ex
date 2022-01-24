@@ -206,6 +206,12 @@ defmodule ElixirBackend.LibObj.Skill do
     end
   end
 
+  def cast(skill) when skill in @skills do
+    {:ok, [skill]}
+  end
+
+  def cast(nil), do: nil
+
   def cast(_skills), do: :error
 
   def load(skills) when is_list(skills) do
