@@ -178,7 +178,9 @@ CREATE TABLE public."Battlechip" (
     kind public."ChipType" NOT NULL,
     class public."ChipClass" NOT NULL,
     custom boolean DEFAULT false NOT NULL,
-    cr integer DEFAULT 0 NOT NULL
+    cr integer DEFAULT 0 NOT NULL,
+    median_hits double precision DEFAULT 1.0 NOT NULL,
+    median_targets double precision DEFAULT 1.0 NOT NULL
 );
 
 
@@ -371,3 +373,4 @@ CREATE UNIQUE INDEX "Virus_name_index" ON public."Virus" USING btree (name);
 
 INSERT INTO public."schema_migrations" (version) VALUES (20220101212038);
 INSERT INTO public."schema_migrations" (version) VALUES (20220120043139);
+INSERT INTO public."schema_migrations" (version) VALUES (20220126042635);

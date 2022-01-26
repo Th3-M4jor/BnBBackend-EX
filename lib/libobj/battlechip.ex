@@ -62,10 +62,13 @@ defmodule ElixirBackend.LibObj.Battlechip do
     field :custom, :boolean
 
     field :cr, :integer
+
+    field :median_hits, :float
+    field :median_targets, :float
   end
 
   defimpl Jason.Encoder do
-    @chip_props ~W(id name elem skill range hits targets effect effduration blight damage kind class cr description custom)a
+    @chip_props ~W(id name elem skill range hits targets effect effduration blight damage kind class cr median_hits median_targets description custom)a
 
     def encode(value, opts) do
       list =
@@ -108,7 +111,9 @@ defmodule ElixirBackend.LibObj.Battlechip do
         :class -> 12
         :cr -> 13
         :custom -> 14
-        :description -> 15
+        :median_hits -> 15
+        :median_targets -> 16
+        :description -> 17
       end
     end
   end
