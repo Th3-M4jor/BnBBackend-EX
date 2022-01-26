@@ -289,8 +289,14 @@ defmodule ElixirBackend.LibObj.Blight do
   def load(_), do: :error
 
   def dump(%ElixirBackend.LibObj.Blight{} = blight) do
-    data = {blight.elem, blight.dmg, blight.duration}
-    {:ok, data}
+    elem = Atom.to_string(blight.elem) |> String.capitalize(:ascii)
+
+    with {:ok, dmg} <- Dice.dump(blight.dmg),
+         {:ok, duration} <- Dice.dump(blight.duration) do
+      {:ok, {elem, dmg, duration}}
+    else
+      _ -> :error
+    end
   end
 
   def dump(nil) do
