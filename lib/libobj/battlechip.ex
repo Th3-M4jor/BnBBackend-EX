@@ -118,7 +118,7 @@ defmodule ElixirBackend.LibObj.Battlechip do
     end
   end
 
-  @valid_keys ~W(name elem skill range hits targets description effect effduration blight damage kind class custom cr)a
+  @valid_keys ~W(name elem skill range hits targets description effect effduration blight damage kind class custom cr median_hits median_targets)a
   def validate_changeset!(keywords) when is_list(keywords) do
     Keyword.validate!(keywords, @valid_keys)
   end
