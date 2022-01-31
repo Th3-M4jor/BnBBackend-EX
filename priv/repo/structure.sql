@@ -170,7 +170,7 @@ CREATE TABLE public."Battlechip" (
     range public."Range" NOT NULL,
     hits character varying(12),
     targets character varying(16),
-    description text,
+    description text NOT NULL,
     effect public."ChipEffect"[],
     effduration integer,
     blight public."Blight",
@@ -251,7 +251,7 @@ CREATE TABLE public."Virus" (
     stats jsonb NOT NULL,
     skills jsonb NOT NULL,
     drops jsonb NOT NULL,
-    description text,
+    description text NOT NULL,
     cr integer NOT NULL,
     abilities character varying(64)[],
     damage public."Dice",
@@ -374,3 +374,4 @@ CREATE UNIQUE INDEX "Virus_name_index" ON public."Virus" USING btree (name);
 INSERT INTO public."schema_migrations" (version) VALUES (20220101212038);
 INSERT INTO public."schema_migrations" (version) VALUES (20220120043139);
 INSERT INTO public."schema_migrations" (version) VALUES (20220126042635);
+INSERT INTO public."schema_migrations" (version) VALUES (20220131190559);
