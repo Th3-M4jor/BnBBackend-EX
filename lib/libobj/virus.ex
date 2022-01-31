@@ -6,8 +6,14 @@ defmodule ElixirBackend.LibObj.VirusStats do
 
   def type, do: :virus_stats
 
-  def cast(stats) when is_map(stats) do
-    {:ok, stats}
+  def cast(%{"mind" => mind, "body" => body, "spirit" => spirit})
+      when mind in 1..5 and body in 1..5 and spirit in 1..5 do
+    {:ok, %{"mind" => mind, "body" => body, "spirit" => spirit}}
+  end
+
+  def cast(%{mind: mind, body: body, spirit: spirit})
+      when mind in 1..5 and body in 1..5 and spirit in 1..5 do
+    {:ok, %{"mind" => mind, "body" => body, "spirit" => spirit}}
   end
 
   def cast(_stats), do: :error
@@ -56,10 +62,11 @@ defmodule ElixirBackend.LibObj.VirusSkills do
   def type, do: :virus_skills
 
   def cast(skills) when is_map(skills) do
-    deduped = Enum.dedup(skills)
+    keys = Map.keys(skills) |> Enum.map(&ElixirBackend.LibObj.Skill.convert/1)
+    values = Map.values(skills)
 
-    if Enum.all?(deduped, &(&1 in @skills)) do
-      {:ok, deduped}
+    if Enum.all?(keys, &(&1 in @skills)) and Enum.all?(values, &(&1 in 1..20)) do
+      {:ok, skills}
     else
       :error
     end
@@ -82,12 +89,15 @@ defmodule ElixirBackend.LibObj.VirusSkills do
   def load(_skills), do: :error
 
   def dump(skills) when is_map(skills) do
-    Map.to_list(skills)
-    |> Enum.map(fn {skill, num} ->
-      skill = to_string(skill) |> String.upcase(:ascii)
-      {skill, num}
-    end)
-    |> Map.new()
+    skills =
+      skills
+      |> Enum.map(fn {skill, num} ->
+        skill = to_string(skill) |> String.upcase(:ascii)
+        {skill, num}
+      end)
+      |> Map.new()
+
+    {:ok, skills}
   end
 
   def dump(_skills), do: :error
@@ -167,7 +177,7 @@ defmodule ElixirBackend.LibObj.Virus do
     field :damage, Dice
     field :dmgelem, Element
     field :blight, Blight
-    field :custom, :boolean
+    field :custom, :boolean, default: false
   end
 
   defimpl Jason.Encoder do
@@ -218,8 +228,14 @@ defmodule ElixirBackend.LibObj.Virus do
     end
   end
 
-  def gen_conditions(params) do
+  @valid_keys ~W(name element hp ac stats skills drops description cr abilities damage dmgelem blight custom)a
+  def validate_changeset!(keywords) when is_list(keywords) do
+    Keyword.validate!(keywords, @valid_keys)
+  end
 
+  def get_valid_keys, do: @valid_keys
+
+  def gen_conditions(params) do
     valid_keys = ~w(elem min_cr max_cr cr min_hp max_hp min_ac max_ac custom)
 
     ElixirBackend.LibObj.Query.validate_keys(params, valid_keys)

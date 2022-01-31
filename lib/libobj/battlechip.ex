@@ -57,14 +57,14 @@ defmodule ElixirBackend.LibObj.Battlechip do
         trap: "Trap"
       ]
 
-    field :class, Ecto.Enum, values: [standard: "Standard", mega: "Mega", giga: "Giga"]
+    field :class, Ecto.Enum, values: [standard: "Standard", mega: "Mega", giga: "Giga"], default: :standard
 
-    field :custom, :boolean
+    field :custom, :boolean, default: false
 
-    field :cr, :integer
+    field :cr, :integer, default: 0
 
-    field :median_hits, :float
-    field :median_targets, :float
+    field :median_hits, :float, default: 1.0
+    field :median_targets, :float, default: 1.0
   end
 
   defimpl Jason.Encoder do
@@ -122,6 +122,8 @@ defmodule ElixirBackend.LibObj.Battlechip do
   def validate_changeset!(keywords) when is_list(keywords) do
     Keyword.validate!(keywords, @valid_keys)
   end
+
+  def get_valid_keys, do: @valid_keys
 
   def gen_conditions(params) when is_map(params) do
     valid_keys = ~w(elem skill range class kind custom cr min_cr max_cr)

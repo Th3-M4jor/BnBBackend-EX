@@ -137,6 +137,10 @@ defmodule ElixirBackend.LibObj.Element do
     {:ok, as_strings}
   end
 
+  def dump(elem) when elem in @elements do
+    {:ok, [String.Chars.to_string(elem) |> String.capitalize(:ascii)]}
+  end
+
   def dump(_elem), do: :error
 
   @spec convert(any) :: :error | {:ok, t()}
@@ -228,7 +232,7 @@ defmodule ElixirBackend.LibObj.Skill do
 
   def dump(_skills), do: :error
 
-  def convert(skill) when is_atom(skill) do
+  def convert(skill) when skill in @skills do
     skill
   end
 

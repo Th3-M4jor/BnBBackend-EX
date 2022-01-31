@@ -23,7 +23,7 @@ defmodule ElixirBackend.LibObj.NCP do
         gray: "Gray"
       ]
 
-    field :custom, :boolean
+    field :custom, :boolean, default: false
   end
 
   defimpl Jason.Encoder do
@@ -64,6 +64,13 @@ defmodule ElixirBackend.LibObj.NCP do
       end
     end
   end
+
+  @valid_keys ~W(name description cost color custom)a
+  def validate_changeset!(keywords) when is_list(keywords) do
+    Keyword.validate!(keywords, @valid_keys)
+  end
+
+  def get_valid_keys, do: @valid_keys
 
   def gen_conditions(params) do
 
