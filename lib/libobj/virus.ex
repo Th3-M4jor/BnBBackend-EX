@@ -178,10 +178,23 @@ defmodule ElixirBackend.LibObj.Virus do
     field :dmgelem, Element
     field :blight, Blight
     field :custom, :boolean, default: false
+
+    field :attack_kind, Ecto.Enum,
+      values: [
+        melee: "Melee",
+        projectile: "Projectile",
+        wave: "Wave",
+        burst: "Burst",
+        summon: "Summon",
+        construct: "Construct",
+        support: "Support",
+        heal: "Heal",
+        trap: "Trap"
+      ]
   end
 
   defimpl Jason.Encoder do
-    @virus_props ~W(id name element hp ac stats skills drops description cr abilities damage dmgelem blight custom)a
+    @virus_props ~W(id name element hp ac stats skills drops description cr abilities damage dmgelem blight custom attack_kind)a
 
     def encode(value, opts) do
       list =
@@ -222,13 +235,14 @@ defmodule ElixirBackend.LibObj.Virus do
         :damage -> 10
         :dmgelem -> 11
         :blight -> 12
-        :custom -> 13
-        :description -> 14
+        :attack_kind -> 13
+        :custom -> 14
+        :description -> 15
       end
     end
   end
 
-  @valid_keys ~W(name element hp ac stats skills drops description cr abilities damage dmgelem blight custom)a
+  @valid_keys ~W(name element hp ac stats skills drops description cr abilities damage dmgelem blight custom attack_kind)a
   def validate_changeset!(keywords) when is_list(keywords) do
     Keyword.validate!(keywords, @valid_keys)
   end
