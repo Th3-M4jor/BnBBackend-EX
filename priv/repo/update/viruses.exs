@@ -15,7 +15,8 @@ alias ElixirBackend.{LibObj.Virus, Repo}
 virus_fields = ~W(name element hp ac stats skills drops description cr abilities damage dmgelem blight custom)a
 
 viruses = [
-  {"HardHead", skills: %{"VLR" => 7}}
+    {"EleOgre", skills: %{"PER" => 4, "AGI" => 4, "END" => 4, "VLR" => 6}},
+    {"Marina", stats: %{"mind" => 1, "body" => 1, "spirit" => 2}}
 ]
 
 Repo.transaction(fn ->

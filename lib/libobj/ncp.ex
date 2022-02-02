@@ -73,7 +73,6 @@ defmodule ElixirBackend.LibObj.NCP do
   def get_valid_keys, do: @valid_keys
 
   def gen_conditions(params) do
-
     valid_keys = ~w(min_cost max_cost cost color custom)
 
     ElixirBackend.LibObj.Query.validate_keys(params, valid_keys)

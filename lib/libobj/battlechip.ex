@@ -57,7 +57,9 @@ defmodule ElixirBackend.LibObj.Battlechip do
         trap: "Trap"
       ]
 
-    field :class, Ecto.Enum, values: [standard: "Standard", mega: "Mega", giga: "Giga"], default: :standard
+    field :class, Ecto.Enum,
+      values: [standard: "Standard", mega: "Mega", giga: "Giga"],
+      default: :standard
 
     field :custom, :boolean, default: false
 

@@ -79,7 +79,6 @@ defmodule ElixirBackend.FolderGroups do
     pairs =
       :ets.select(tid, [{{:"$1", {:"$2", :"$3"}}, [{:<, :"$3", limit}], [{{:"$1", :"$2"}}]}])
 
-
     if Enum.empty?(pairs) do
       {:noreply, tid}
     else
@@ -88,7 +87,8 @@ defmodule ElixirBackend.FolderGroups do
   end
 
   @impl true
-  @spec handle_continue({:cleanup, [{String.t(), :ets.tab()}]}, :ets.tab()) :: {:noreply, :ets.tab()}
+  @spec handle_continue({:cleanup, [{String.t(), :ets.tab()}]}, :ets.tab()) ::
+          {:noreply, :ets.tab()}
   def handle_continue({:cleanup, pairs}, tid) do
     bot_node = Application.fetch_env!(:elixir_backend, :bot_node_name)
 
@@ -103,7 +103,7 @@ defmodule ElixirBackend.FolderGroups do
       :ets.delete(table)
     end)
 
-      {:noreply, tid}
+    {:noreply, tid}
   end
 
   @spec insert_player_data_and_get(String.t(), String.t(), list()) :: {:ok, list()} | :error
