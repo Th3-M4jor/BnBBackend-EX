@@ -258,7 +258,7 @@ CREATE TABLE public."Virus" (
     dmgelem public."Element"[],
     blight public."Blight",
     custom boolean DEFAULT false NOT NULL,
-    attack_kind public."ChipType"
+    attack_kind public."ChipType" NOT NULL
 );
 
 
@@ -377,3 +377,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20220120043139);
 INSERT INTO public."schema_migrations" (version) VALUES (20220126042635);
 INSERT INTO public."schema_migrations" (version) VALUES (20220131190559);
 INSERT INTO public."schema_migrations" (version) VALUES (20220202171429);
+INSERT INTO public."schema_migrations" (version) VALUES (20220203230937);
