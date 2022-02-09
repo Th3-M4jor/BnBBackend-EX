@@ -22,7 +22,6 @@ defmodule ElixirBackendWeb do
       use Phoenix.Controller, namespace: ElixirBackendWeb
 
       import Plug.Conn
-      import ElixirBackendWeb.Gettext
       alias ElixirBackendWeb.Router.Helpers, as: Routes
     end
   end
@@ -54,7 +53,6 @@ defmodule ElixirBackendWeb do
   def channel do
     quote do
       use Phoenix.Channel
-      import ElixirBackendWeb.Gettext
     end
   end
 
@@ -65,9 +63,6 @@ defmodule ElixirBackendWeb do
 
       # Import basic rendering functionality (render, render_layout, etc)
       import Phoenix.View
-
-      import ElixirBackendWeb.ErrorHelpers
-      import ElixirBackendWeb.Gettext
       alias ElixirBackendWeb.Router.Helpers, as: Routes
     end
   end
