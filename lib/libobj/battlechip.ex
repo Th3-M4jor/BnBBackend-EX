@@ -130,8 +130,8 @@ defmodule ElixirBackend.LibObj.Battlechip do
   def gen_conditions(params) when is_map(params) do
     valid_keys = ~w(elem skill range class kind custom cr min_cr max_cr)
 
-    ElixirBackend.LibObj.Query.validate_keys(params, valid_keys)
-    ElixirBackend.LibObj.Query.check_mutually_exclusive(params, "cr", ["min_cr", "max_cr"])
+    ElixirBackend.LibObj.Query.validate_keys!(params, valid_keys)
+    ElixirBackend.LibObj.Query.check_mutually_exclusive!(params, "cr", ["min_cr", "max_cr"])
 
     for {key, value} <- params, reduce: true do
       acc ->

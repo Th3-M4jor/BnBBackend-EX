@@ -345,8 +345,8 @@ defmodule ElixirBackend.LibObj.Query do
 
   alias ElixirBackend.LibObj.{BadKey, ImproperKey}
 
-  @spec check_mutually_exclusive(params :: map(), any(), [any()]) :: :ok | no_return()
-  def check_mutually_exclusive(params, limiter, improper_keys) when is_map_key(params, limiter) do
+  @spec check_mutually_exclusive!(params :: map(), any(), [any()]) :: :ok | no_return()
+  def check_mutually_exclusive!(params, limiter, improper_keys) when is_map_key(params, limiter) do
     Enum.each(improper_keys, fn improper_key ->
       if is_map_key(params, improper_key) do
         raise ImproperKey, {limiter, improper_key}
@@ -356,12 +356,12 @@ defmodule ElixirBackend.LibObj.Query do
     :ok
   end
 
-  def check_mutually_exclusive(params, _limiter, _improper_keys) when is_map(params) do
+  def check_mutually_exclusive!(params, _limiter, _improper_keys) when is_map(params) do
     :ok
   end
 
-  @spec validate_keys(params :: map(), valid_keys :: [any()]) :: :ok | no_return()
-  def validate_keys(params, valid_keys) when is_map(params) and is_list(valid_keys) do
+  @spec validate_keys!(params :: map(), valid_keys :: [any()]) :: :ok | no_return()
+  def validate_keys!(params, valid_keys) when is_map(params) and is_list(valid_keys) do
     param_keys = Map.keys(params)
 
     Enum.each(param_keys, fn param_key ->

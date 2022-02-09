@@ -249,11 +249,14 @@ defmodule ElixirBackend.LibObj.Virus do
 
   def get_valid_keys, do: @valid_keys
 
+  @doc """
+  Converts a set of URL query parameters into a WHERE clause.
+  """
   def gen_conditions(params) do
     valid_keys = ~w(elem min_cr max_cr cr min_hp max_hp min_ac max_ac custom)
 
-    ElixirBackend.LibObj.Query.validate_keys(params, valid_keys)
-    ElixirBackend.LibObj.Query.check_mutually_exclusive(params, "cr", ["min_cr", "max_cr"])
+    ElixirBackend.LibObj.Query.validate_keys!(params, valid_keys)
+    ElixirBackend.LibObj.Query.check_mutually_exclusive!(params, "cr", ["min_cr", "max_cr"])
 
     for {key, value} <- params, reduce: true do
       acc ->
