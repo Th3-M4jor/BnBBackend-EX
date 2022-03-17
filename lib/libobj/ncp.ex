@@ -68,7 +68,7 @@ defmodule ElixirBackend.LibObj.NCP do
     end
   end
 
-  @valid_keys ~W(name description cost color custom)a
+  @valid_keys ~W(name description cost color custom conflicts)a
   def validate_changeset!(keywords) when is_list(keywords) do
     Keyword.validate!(keywords, @valid_keys)
   end
