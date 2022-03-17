@@ -214,7 +214,8 @@ CREATE TABLE public."NaviCust" (
     description text NOT NULL,
     size integer NOT NULL,
     color public."Color" NOT NULL,
-    custom boolean DEFAULT false NOT NULL
+    custom boolean DEFAULT false NOT NULL,
+    conflicts character varying(255)[]
 );
 
 
@@ -378,3 +379,4 @@ INSERT INTO public."schema_migrations" (version) VALUES (20220126042635);
 INSERT INTO public."schema_migrations" (version) VALUES (20220131190559);
 INSERT INTO public."schema_migrations" (version) VALUES (20220202171429);
 INSERT INTO public."schema_migrations" (version) VALUES (20220203230937);
+INSERT INTO public."schema_migrations" (version) VALUES (20220317033651);
