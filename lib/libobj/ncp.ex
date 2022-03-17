@@ -23,11 +23,13 @@ defmodule ElixirBackend.LibObj.NCP do
         gray: "Gray"
       ]
 
+    field :conflicts, {:array, :string}
+
     field :custom, :boolean, default: false
   end
 
   defimpl Jason.Encoder do
-    @ncp_props ~W(id name cost color description custom)a
+    @ncp_props ~W(id name cost color conflicts description custom)a
 
     def encode(value, opts) do
       list =
@@ -59,8 +61,9 @@ defmodule ElixirBackend.LibObj.NCP do
         :name -> 1
         :cost -> 2
         :color -> 3
-        :custom -> 4
-        :description -> 5
+        :conflicts -> 4
+        :custom -> 5
+        :description -> 6
       end
     end
   end
