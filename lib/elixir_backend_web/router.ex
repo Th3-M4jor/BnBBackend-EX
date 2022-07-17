@@ -24,6 +24,13 @@ defmodule ElixirBackendWeb.Router do
     get "/:obj", LibObjController, :fetch
   end
 
+
+  scope "/", ElixirBackendWeb do
+    pipe_through :browser
+
+    match :*, "/*path", FallbackController, :fallback
+  end
+
   # Enables LiveDashboard only for development
   #
   # If you want to use the LiveDashboard in production, you should put

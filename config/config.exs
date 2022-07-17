@@ -16,7 +16,8 @@ config :elixir_backend, ElixirBackendWeb.Endpoint,
   secret_key_base: "UfpDOG9Nn3ufzKYBX3hxc+9BThzAMbjzYea3yoA7m9hBiAuasxUM55r8rBFMZ8aR",
   render_errors: [view: ElixirBackendWeb.ErrorView, accepts: ~w(html json), layout: false],
   pubsub_server: ElixirBackend.PubSub,
-  live_view: [signing_salt: "QWcNspQp"]
+  live_view: [signing_salt: "QWcNspQp"],
+  check_origin: false
 
 # Configures Elixir's Logger
 config :logger, :console,

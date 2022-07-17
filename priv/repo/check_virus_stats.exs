@@ -10,25 +10,29 @@
 # We recommend using the bang functions (`insert!`, `update!`
 # and so on) as they will fail if something goes wrong.
 import Ecto.Changeset
+import Ecto.Query
 alias ElixirBackend.{LibObj.Battlechip, LibObj.Virus, Repo}
 
-viruses = Repo.all(Virus)
-for virus <- viruses do
-  max_mind = virus.stats["mind"] * 4
-  max_body = virus.stats["body"] * 4
-  max_spirit = virus.stats["spirit"] * 4
+query = from v in Virus, where: is_nil(v.attack_kind)
+res = Repo.aggregate(query, :count)
+IO.puts("Viruses without attack kind: #{res}")
+# viruses = Repo.all(Virus)
+# for virus <- viruses do
+#   max_mind = virus.stats["mind"] * 4
+#   max_body = virus.stats["body"] * 4
+#   max_spirit = virus.stats["spirit"] * 4
 
-  per = virus.skills[:per] || 0
-  inf = virus.skills[:inf] || 0
-  tch = virus.skills[:tch] || 0
-  str = virus.skills[:str] || 0
-  agi = virus.skills[:agi] || 0
-  endr = virus.skills[:end] || 0
-  chm = virus.skills[:chm] || 0
-  vlr = virus.skills[:vlr] || 0
-  aff = virus.skills[:aff] || 0
+#   per = virus.skills[:per] || 0
+#   inf = virus.skills[:inf] || 0
+#   tch = virus.skills[:tch] || 0
+#   str = virus.skills[:str] || 0
+#   agi = virus.skills[:agi] || 0
+#   endr = virus.skills[:end] || 0
+#   chm = virus.skills[:chm] || 0
+#   vlr = virus.skills[:vlr] || 0
+#   aff = virus.skills[:aff] || 0
 
-  if per > max_mind or inf > max_mind or tch > max_mind or str > max_body or agi > max_body or endr > max_body or chm > max_spirit or vlr > max_spirit or aff > max_spirit do
-    IO.puts("#{virus.name} has too many skills")
-  end
-end
+#   if per > max_mind or inf > max_mind or tch > max_mind or str > max_body or agi > max_body or endr > max_body or chm > max_spirit or vlr > max_spirit or aff > max_spirit do
+#     IO.puts("#{virus.name} has too many skills")
+#   end
+# end
