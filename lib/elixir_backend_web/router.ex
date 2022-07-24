@@ -24,7 +24,6 @@ defmodule ElixirBackendWeb.Router do
     get "/:obj", LibObjController, :fetch
   end
 
-
   scope "/", ElixirBackendWeb do
     pipe_through :browser
 

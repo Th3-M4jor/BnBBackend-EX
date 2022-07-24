@@ -2,7 +2,7 @@ defmodule ElixirBackend.LibObj.Battlechip do
   @moduledoc """
   Ecto Type mapping for battlechips
   """
-  alias ElixirBackend.LibObj.{Element, Dice, Blight, Skill}
+  alias ElixirBackend.LibObj.Shared.{Element, Dice, Blight, Skill}
 
   use Ecto.Schema
   import Ecto.Query, only: [dynamic: 2]
@@ -73,27 +73,12 @@ defmodule ElixirBackend.LibObj.Battlechip do
     @chip_props ~W(id name elem skill range hits targets effect effduration blight damage kind class cr median_hits median_targets description custom)a
 
     def encode(value, opts) do
-      list =
-        Map.to_list(value)
-        |> Stream.filter(fn
-          {key, value} when key in @chip_props and not is_nil(value) -> true
-          _ -> false
-        end)
-        |> Enum.sort_by(fn {key, _} -> key_to_sort_num(key) end)
-        |> Stream.map(fn {key, value} ->
-          [
-            Jason.Encode.atom(key, opts),
-            ":",
-            Jason.Encoder.encode(value, opts)
-          ]
-        end)
-        |> Enum.intersperse(",")
-
-      [
-        "{",
-        list,
-        "}"
-      ]
+      Map.to_list(value)
+      |> Stream.filter(fn {key, value} ->
+        key in @chip_props and value != nil
+      end)
+      |> Enum.sort_by(fn {key, _} -> key_to_sort_num(key) end)
+      |> Jason.Encode.keyword(opts)
     end
 
     defp key_to_sort_num(key) do

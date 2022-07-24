@@ -47,7 +47,7 @@ defmodule ElixirBackend.MixProject do
       {:ecto_sql, "~> 3.7"},
       {:postgrex, ">= 0.15.10"},
       {:phoenix_html, "~> 3.2.0"},
-      #{:gettext, "~> 0.11"},
+      # {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
       {:oban, "~> 2.12"},
