@@ -21,10 +21,6 @@ defmodule ElixirBackend.LibObj.Shared.Blight do
     {:ok, blight}
   end
 
-  def cast(nil) do
-    {:ok, nil}
-  end
-
   def cast({elem, dmg, duration}) do
     load({elem, dmg, duration})
   end
@@ -43,25 +39,17 @@ defmodule ElixirBackend.LibObj.Shared.Blight do
     end
   end
 
-  def load(nil) do
-    {:ok, nil}
-  end
-
   def load(_), do: :error
 
-  def dump(%__MODULE__{} = blight) do
-    elem = Atom.to_string(blight.elem) |> String.capitalize(:ascii)
+  def dump(%__MODULE__{elem: elem, dmg: dmg, duration: duration}) do
+    elem = Atom.to_string(elem) |> String.capitalize(:ascii)
 
-    with {:ok, dmg} <- Dice.dump(blight.dmg),
-         {:ok, duration} <- Dice.dump(blight.duration) do
+    with {:ok, dmg} <- Dice.dump(dmg),
+         {:ok, duration} <- Dice.dump(duration) do
       {:ok, {elem, dmg, duration}}
     else
       _ -> :error
     end
-  end
-
-  def dump(nil) do
-    {:ok, nil}
   end
 
   def dump(_), do: :error

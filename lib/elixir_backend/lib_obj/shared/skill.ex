@@ -27,10 +27,10 @@ defmodule ElixirBackend.LibObj.Shared.Skill do
     :aff
   ]
 
-  def type, do: :skill
+  def type, do: {:array, :string}
 
   def cast(skills) when is_list(skills) do
-    deduped = Enum.dedup(skills)
+    deduped = Enum.uniq(skills)
 
     if Enum.all?(deduped, &(&1 in @skills)) do
       {:ok, deduped}

@@ -10,9 +10,7 @@ defmodule ElixirBackend.LibObj.Virus.Drops do
   def cast(drops) when is_map(drops) do
     drops =
       Map.to_list(drops)
-      |> Enum.map(fn {drop, num} ->
-        [drop, num]
-      end)
+      |> Enum.map(&Tuple.to_list/1)
 
     {:ok, drops}
   end
@@ -22,9 +20,7 @@ defmodule ElixirBackend.LibObj.Virus.Drops do
   def load(drops) when is_map(drops) do
     drops =
       Map.to_list(drops)
-      |> Enum.map(fn {drop, num} ->
-        [drop, num]
-      end)
+      |> Enum.map(&Tuple.to_list/1)
 
     {:ok, drops}
   end
@@ -37,11 +33,11 @@ defmodule ElixirBackend.LibObj.Virus.Drops do
 
   def dump(drops) when is_list(drops) do
     drops =
-      Enum.map(drops, fn [drop, num] ->
-        {drop, num}
-      end)
+      drops
+      |> Enum.map(&List.to_tuple/1)
+      |> Map.new()
 
-    {:ok, Map.new(drops)}
+    {:ok, drops}
   end
 
   def dump(_), do: :error

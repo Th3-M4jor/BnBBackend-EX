@@ -4,7 +4,7 @@ defmodule ElixirBackend.MixProject do
   def project do
     [
       app: :elixir_backend,
-      version: "0.1.1",
+      version: "0.1.2",
       elixir: "~> 1.12",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
@@ -13,7 +13,7 @@ defmodule ElixirBackend.MixProject do
       deps: deps(),
       releases: [
         elixir_backend: [
-          version: "0.1.1",
+          version: "0.1.2",
           applications: [
             elixir_backend: :permanent
           ],

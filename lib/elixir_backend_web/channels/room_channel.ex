@@ -44,26 +44,26 @@ defmodule ElixirBackendWeb.RoomChannel do
       socket.assigns.player_name
     ])
 
-    players =
-      ElixirBackend.FolderGroups.insert_spectator_and_get(
-        socket.assigns.group_name,
-        socket.assigns.player_name
-      )
+    ElixirBackend.FolderGroups.insert_spectator_and_get(
+      socket.assigns.group_name,
+      socket.assigns.player_name
+    )
+    |> case do
+      {:ok, folder_group} ->
+        res =
+          folder_group
+          |> Stream.filter(fn {player_name, folder} ->
+            player_name != socket.assigns.player_name and folder != :spectator
+          end)
+          |> Enum.map(fn {player_name, folder} ->
+            [player_name, folder]
+          end)
 
-    if players == :error do
-      {:stop, "Group error", {:error, "Group missing"}, socket}
-    else
-      res =
-        elem(players, 1)
-        |> Stream.filter(fn {player_name, folder} ->
-          player_name != socket.assigns.player_name and folder != :spectator
-        end)
-        |> Enum.map(fn {player_name, folder} ->
-          [player_name, folder]
-        end)
+        broadcast!(socket, "joined", %{"body" => res})
+        {:reply, :ok, socket}
 
-      broadcast!(socket, "joined", %{"body" => res})
-      {:reply, :ok, socket}
+      :error ->
+        {:stop, "Group error", {:error, "Group missing"}, socket}
     end
   end
 
@@ -75,24 +75,24 @@ defmodule ElixirBackendWeb.RoomChannel do
       inspect(data, pretty: true)
     ])
 
-    players =
-      ElixirBackend.FolderGroups.insert_player_data_and_get(
-        socket.assigns.group_name,
-        socket.assigns.player_name,
-        data
-      )
+    ElixirBackend.FolderGroups.insert_player_data_and_get(
+      socket.assigns.group_name,
+      socket.assigns.player_name,
+      data
+    )
+    |> case do
+      {:ok, folder_group} ->
+        res =
+          folder_group
+          |> Enum.map(fn {player_name, folder} ->
+            [player_name, folder]
+          end)
 
-    if players == :error do
-      {:stop, "Group error", {:error, "Group missing"}, socket}
-    else
-      res =
-        elem(players, 1)
-        |> Enum.map(fn {player_name, folder} ->
-          [player_name, folder]
-        end)
+        broadcast!(socket, "joined", %{"body" => res})
+        {:reply, :ok, socket}
 
-      broadcast!(socket, "joined", %{"body" => res})
-      {:reply, :ok, socket}
+      :error ->
+        {:stop, "Group error", {:error, "Group missing"}, socket}
     end
   end
 
@@ -109,24 +109,24 @@ defmodule ElixirBackendWeb.RoomChannel do
       inspect(data, pretty: true)
     ])
 
-    players =
-      ElixirBackend.FolderGroups.insert_player_data_and_get(
-        socket.assigns.group_name,
-        socket.assigns.player_name,
-        data
-      )
+    ElixirBackend.FolderGroups.insert_player_data_and_get(
+      socket.assigns.group_name,
+      socket.assigns.player_name,
+      data
+    )
+    |> case do
+      {:ok, folder_group} ->
+        res =
+          folder_group
+          |> Enum.map(fn {player_name, folder} ->
+            [player_name, folder]
+          end)
 
-    if players == :error do
-      {:stop, "Group error", {:error, "Group missing"}, socket}
-    else
-      res =
-        elem(players, 1)
-        |> Enum.map(fn {player_name, folder} ->
-          [player_name, folder]
-        end)
+        broadcast!(socket, "updated", %{"body" => res, "source" => socket.assigns.player_name})
+        {:reply, :ok, socket}
 
-      broadcast!(socket, "updated", %{"body" => res, source: socket.assigns.player_name})
-      {:reply, :ok, socket}
+      :error ->
+        {:stop, "Group error", {:error, "Group missing"}, socket}
     end
   end
 

@@ -18,7 +18,7 @@ defmodule ElixirBackend.LibObj.Shared.Dice do
 
   use Ecto.Type
 
-  def type, do: :dice
+  def type, do: __MODULE__
 
   def cast(%__MODULE__{} = dice) do
     {:ok, dice}
@@ -26,6 +26,16 @@ defmodule ElixirBackend.LibObj.Shared.Dice do
 
   def cast({dienum, dietype}) when is_integer(dienum) and is_integer(dietype) do
     {:ok, %__MODULE__{dienum: dienum, dietype: dietype}}
+  end
+
+  def cast(die_str) when is_binary(die_str) do
+    with [dienum, dietype] <- String.split(die_str, "d"),
+         {dienum, ""} <- Integer.parse(dienum),
+         {dietype, ""} <- Integer.parse(dietype) do
+      {:ok, %__MODULE__{dienum: dienum, dietype: dietype}}
+    else
+      _ -> :error
+    end
   end
 
   def cast(_) do
@@ -38,20 +48,12 @@ defmodule ElixirBackend.LibObj.Shared.Dice do
     {:ok, die}
   end
 
-  def load(nil) do
-    {:ok, nil}
-  end
-
   def load(_), do: :error
 
   @spec dump(t() | nil) :: :error | {:ok, {non_neg_integer(), non_neg_integer()} | nil}
   def dump(%__MODULE__{} = dice) do
     data = {dice.dienum, dice.dietype}
     {:ok, data}
-  end
-
-  def dump(nil) do
-    {:ok, nil}
   end
 
   def dump(_), do: :error

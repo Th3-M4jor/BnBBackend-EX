@@ -86,7 +86,7 @@ defmodule ElixirBackend.LibObj.Shared.Element do
   def dump(_elem), do: :error
 
   @spec convert(any) :: :error | {:ok, t()}
-  def convert(elem) when elem in @elements do
+  def convert(elem) when is_atom(elem) and elem in @elements do
     {:ok, elem}
   end
 
