@@ -5,7 +5,7 @@ defmodule ElixirBackend.MixProject do
     [
       app: :elixir_backend,
       version: "0.1.2",
-      elixir: "~> 1.12",
+      elixir: "~> 1.14",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -42,11 +42,12 @@ defmodule ElixirBackend.MixProject do
   # Type `mix help deps` for examples and options.
   defp deps do
     [
-      {:phoenix, "~> 1.6.0"},
+      {:phoenix, "~> 1.7.0"},
       {:phoenix_ecto, "~> 4.4"},
       {:ecto_sql, "~> 3.7"},
       {:postgrex, ">= 0.15.10"},
-      {:phoenix_html, "~> 3.2.0"},
+      {:phoenix_html, "~> 3.3.0"},
+      {:phoenix_view, "~> 2.0"},
       # {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:plug_cowboy, "~> 2.0"},
